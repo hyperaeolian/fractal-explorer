@@ -11,7 +11,8 @@ const MandelbrotSet = function(p5){
 
     p5.setup = function() {
 
-        p5.createCanvas(WIDTH, HEIGHT);
+        let canvas = p5.createCanvas(WIDTH, HEIGHT);
+        canvas.parent('renderedOutputArea');
         p5.loadPixels();
 
         for (let i = 0; i < WIDTH; i++) {
@@ -36,7 +37,7 @@ const MandelbrotSet = function(p5){
 
             // Uncomment for escape time coloring
             //if (num_iters === MAX_ITERATIONS) {
-            // bright = 0;
+            // colorValue = 0;
             //}
 
             let pix = (i + j * WIDTH) * 4;
