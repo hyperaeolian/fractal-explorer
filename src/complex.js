@@ -15,7 +15,7 @@ export default class Complex {
         }
     }
 
-    _doOperation(num, operation, exponent=null){
+    _doOperation(num, operation){
         this._performChecks(num);
         let real;
         let imag;
@@ -32,10 +32,6 @@ export default class Complex {
                 real = this._real * num.real() - this._imag * num.imag();
                 imag = this._imag * num.real() + this._real * num.imag();
                 break;
-            case '^':
-                real = Math.pow(this._real, exponent);
-                imag = Math.pow(this._imag, exponent);
-                break;
         }
 
         return Complex.of(real, imag);
@@ -48,6 +44,14 @@ export default class Complex {
     real(){ return this._real; }
 
     imag(){ return this._imag; }
+
+    setReal(value){
+    	this._real = value;
+    }
+
+    setImag(value){
+    	this._imag = value;
+    }
 
     add(num){
         return this._doOperation(num, '+');
@@ -65,13 +69,10 @@ export default class Complex {
         throw `Division of complex numbers is not implemented`;
     }
 
-    pow(exponent){
-        return this._doOperation(this, '^', exponent);
-    }
-
     magnitude(){
-        let x = this.pow(2);
-        return Math.sqrt(x.real() + x.imag());
+        return Math.sqrt(
+        	this.real() * this.real() + this.imag() * this.imag()
+        );
     }
 
     toString(){
