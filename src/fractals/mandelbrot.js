@@ -4,10 +4,15 @@ import Complex from '../complex';
 
 const MandelbrotSet = function(p5){
     
-    const MAX_ITERATIONS = 700;
+    let maxIterations = 700;
     const INFINITY = 50;
     const WIDTH = 600;
     const HEIGHT = 600;
+
+    p5.updateNumIterations = function(newValue){
+        maxIterations = newValue || 700;
+        renderMandelbrotSet(newValue);
+    }
 
 
     p5.setup = function() {
@@ -15,7 +20,15 @@ const MandelbrotSet = function(p5){
         let canvas = p5.createCanvas(WIDTH, HEIGHT);
         canvas.parent('renderedOutputArea');
         p5.loadPixels();
+        renderMandelbrotSet(maxIterations);
 
+    }
+
+    p5.draw = function() {
+
+    }
+
+    const renderMandelbrotSet = function(maxi){
         for (let i = 0; i < WIDTH; i++) {
             for (let j = 0; j < HEIGHT; j++) {
 
@@ -28,16 +41,16 @@ const MandelbrotSet = function(p5){
 
             let num_iters = 0;
 
-            while (Z.magnitude() < INFINITY && num_iters < MAX_ITERATIONS) {
+            while (Z.magnitude() < INFINITY && num_iters < maxi) {
                 // Mandelbrot's equation: Zn+1 = Zn^2 + C
                 Z = Z.multiply(Z).add(C);
                 num_iters++;
             }
 
-            let colorValue = normalizeToRGBValue(num_iters, MAX_ITERATIONS);
+            let colorValue = normalizeToRGBValue(num_iters, maxi);
 
             // Uncomment for escape time coloring
-            //if (num_iters === MAX_ITERATIONS) {
+            //if (num_iters === maxIterations) {
             // colorValue = 0;
             //}
 
@@ -49,10 +62,7 @@ const MandelbrotSet = function(p5){
             }
         }
         p5.updatePixels();
-    }
-
-    p5.draw = function() {
-
+        // p5.updatePixels();
     }
 
 
