@@ -1,5 +1,6 @@
 import Complex from './complex';
 
+// Parameters for user control: Iterations, Infinity, Color, Zoom
 
 const MandelbrotSet = function(p5){
     
