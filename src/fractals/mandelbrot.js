@@ -9,16 +9,15 @@ const MandelbrotSet = function(p5){
     const WIDTH = 600;
     const HEIGHT = 600;
 
-    p5.updateNumIterations = function(newValue){
-        maxIterations = newValue || 700;
-        renderMandelbrotSet(newValue);
+    p5.update = function(items){
+        console.log(`Updating with the following items ${items}`);
     }
 
 
     p5.setup = function() {
 
-        let canvas = p5.createCanvas(WIDTH, HEIGHT);
-        canvas.parent('renderedOutputArea');
+        let canvas = p5.createCanvas(WIDTH, HEIGHT)
+            .parent('renderedOutputArea');
         p5.loadPixels();
         renderMandelbrotSet(maxIterations);
 
@@ -28,7 +27,7 @@ const MandelbrotSet = function(p5){
 
     }
 
-    const renderMandelbrotSet = function(maxi){
+    const renderMandelbrotSet = function(max_iters){
         for (let i = 0; i < WIDTH; i++) {
             for (let j = 0; j < HEIGHT; j++) {
 
@@ -41,16 +40,16 @@ const MandelbrotSet = function(p5){
 
             let num_iters = 0;
 
-            while (Z.magnitude() < INFINITY && num_iters < maxi) {
+            while (Z.magnitude() < INFINITY && num_iters < max_iters) {
                 // Mandelbrot's equation: Zn+1 = Zn^2 + C
                 Z = Z.multiply(Z).add(C);
                 num_iters++;
             }
 
-            let colorValue = normalizeToRGBValue(num_iters, maxi);
+            let colorValue = normalizeToRGBValue(num_iters, max_iters);
 
             // Uncomment for escape time coloring
-            //if (num_iters === maxIterations) {
+            //if (num_iters === max_iters) {
             // colorValue = 0;
             //}
 
@@ -62,7 +61,6 @@ const MandelbrotSet = function(p5){
             }
         }
         p5.updatePixels();
-        // p5.updatePixels();
     }
 
 

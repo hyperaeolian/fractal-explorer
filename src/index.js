@@ -31,10 +31,10 @@ function main(sources){
         ])
     });
 
-    return { DOM: virtualDOM$ }
+    return { DOM: virtualDOM$, Sketch: numIterations$ }
 }
 
 run(main, { 
     DOM: makeDOMDriver('#controls'),
-    sketch: makeSketchDriver(FractalApp)
+    Sketch: makeSketchDriver(FractalApp)
 });
