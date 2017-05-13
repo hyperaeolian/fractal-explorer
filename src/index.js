@@ -1,6 +1,7 @@
 import {run} from '@cycle/run'
 import {h3, div, input, label, makeDOMDriver} from '@cycle/dom'
 
+import makeSketchDriver from './drivers/sketchDriver';
 import MandelbrotSet from './fractals/mandelbrot';
 
 const FractalApp = new window.p5(MandelbrotSet);
@@ -14,15 +15,15 @@ function main(sources){
         .map(e => e.target.value)
         .startWith('100');
 
-    const virtualDOM$ = numIterations$.map(numIterations => {
+    const virtualDOM$ = numIterations$.map(numIters => {
         return div([
-            h3(numIterations|0),
+            h3(numIters|0),
             label('Number of Iterations'),
             input('#numIterations', {
                 attrs: {
                     type: 'range',
                     min: 100,
-                    value: numIterations|0,
+                    value: numIters|0,
                     max: 1000,
                     step: 100
                 }
@@ -33,4 +34,7 @@ function main(sources){
     return { DOM: virtualDOM$ }
 }
 
-run(main, { DOM: makeDOMDriver('#controls') });
+run(main, { 
+    DOM: makeDOMDriver('#controls'),
+    sketch: makeSketchDriver(FractalApp)
+});

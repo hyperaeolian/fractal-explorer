@@ -5,7 +5,7 @@ export default class Complex {
         this._imag = isComplex ? realOrComplex.imag() : imag;
     }
 
-    _performChecks(value){
+    _verifyIsComplexNumber(value){
         if (!(value instanceof Complex)){
             throw `${value} is not a complex number.`;
         }
@@ -16,7 +16,7 @@ export default class Complex {
     }
 
     _doOperation(operand, operation){
-        this._performChecks(operand);
+        this._verifyIsComplexNumber(operand);
         let real;
         let imag;
         switch (operation){
@@ -61,10 +61,12 @@ export default class Complex {
         throw `Division of complex numbers is not implemented`;
     }
 
+    pow(exp){
+        return Math.pow(this._real, exp) + Math.pow(this._imag, exp);
+    }
+
     magnitude(){
-        return Math.sqrt(
-        	this.real() * this.real() + this.imag() * this.imag()
-        );
+        return Math.sqrt(this.pow(2));
     }
 
     toString(){
