@@ -1,6 +1,4 @@
-import xs from 'xstream';
-import {adapt} from '@cycle/run/lib/adapt';
-
+import xs from 'xstream'
 
 
 export default function makeSketchDriver(App){

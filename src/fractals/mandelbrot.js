@@ -4,17 +4,19 @@ import Complex from '../complex';
 
 export default new window.p5(function(p){
     
-    const INFINITY = 50;
     const WIDTH = 600;
     const HEIGHT = 600;
+    const INFINITY = 50;
 
     let maxIterations = 100;
     let escapeTimeColoring = false;
+
 
     p.update = iters => {
         console.log(`Updating with the following items ${iters}`);
         maxIterations = iters;
     }
+
 
     p.setup = function() {
         let canvas = p.createCanvas(WIDTH, HEIGHT)
@@ -25,16 +27,18 @@ export default new window.p5(function(p){
 
     }
 
+
     p.draw = function() {
-        renderMandelbrotSet(maxIterations);
+        _renderMandelbrotSet(maxIterations);
     }
+
 
     p.mouseReleased = function(){
         p.redraw();
-
+        return false;
     }
 
-    const renderMandelbrotSet = function(max_iters){
+    const _renderMandelbrotSet = function(max_iters){
         for (let i = 0; i < WIDTH; i++) {
             for (let j = 0; j < HEIGHT; j++) {
 
@@ -53,7 +57,7 @@ export default new window.p5(function(p){
                     num_iters++;
                 }
 
-                let colorValue = normalizeToRGBValue(num_iters, max_iters);
+                let colorValue = _normalizeToRGBValue(num_iters, max_iters);
 
                 if (escapeTimeColoring && num_iters === max_iters) {
                     colorValue = 0;
@@ -70,7 +74,7 @@ export default new window.p5(function(p){
     }
 
 
-    const normalizeToRGBValue = (val, maxValue) => {
+    const _normalizeToRGBValue = (val, maxValue) => {
       // Scale @param val from a range of 0 to @param maxValue
       //   to a range of 0 to 255 (RGB values)
       

@@ -1,8 +1,8 @@
 import {run} from '@cycle/run'
 import {h3, div, input, label, makeDOMDriver} from '@cycle/dom'
 
-import makeSketchDriver from './drivers/sketchDriver';
-import MandelbrotSet from './fractals/mandelbrot';
+import makeSketchDriver from './drivers/sketchDriver'
+import MandelbrotSet from './fractals/mandelbrot'
 
 
 const Drivers = {
