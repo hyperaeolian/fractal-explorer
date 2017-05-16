@@ -4,7 +4,12 @@ import {h3, div, input, label, makeDOMDriver} from '@cycle/dom'
 import makeSketchDriver from './drivers/sketchDriver';
 import MandelbrotSet from './fractals/mandelbrot';
 
-const FractalApp = new window.p5(MandelbrotSet);
+
+const Drivers = {
+    DOM: makeDOMDriver('#controls'),
+    Sketch: makeSketchDriver(MandelbrotSet)
+}
+
 
 function main(sources){
     const input$ = sources.DOM
@@ -25,7 +30,7 @@ function main(sources){
                     min: 100,
                     value: numIters|0,
                     max: 1000,
-                    step: 100
+                    step: 10
                 }
             })
         ])
@@ -34,7 +39,4 @@ function main(sources){
     return { DOM: virtualDOM$, Sketch: numIterations$ }
 }
 
-run(main, { 
-    DOM: makeDOMDriver('#controls'),
-    Sketch: makeSketchDriver(FractalApp)
-});
+run(main, Drivers);

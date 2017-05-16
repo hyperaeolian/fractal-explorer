@@ -2,28 +2,35 @@ import Complex from '../complex';
 
 // Parameters for user control: Iterations, Infinity, Color, Zoom
 
-const MandelbrotSet = function(p5){
+export default new window.p5(function(p){
     
-    let maxIterations = 700;
     const INFINITY = 50;
     const WIDTH = 600;
     const HEIGHT = 600;
 
-    p5.update = function(items){
-        console.log(`Updating with the following items ${items}`);
+    let maxIterations = 100;
+    let escapeTimeColoring = false;
+
+    p.update = iters => {
+        console.log(`Updating with the following items ${iters}`);
+        maxIterations = iters;
     }
 
-
-    p5.setup = function() {
-
-        let canvas = p5.createCanvas(WIDTH, HEIGHT)
+    p.setup = function() {
+        let canvas = p.createCanvas(WIDTH, HEIGHT)
             .parent('renderedOutputArea');
-        p5.loadPixels();
-        renderMandelbrotSet(maxIterations);
+        p.loadPixels();
+        p.pixelDensity(1);
+        p.noLoop();
 
     }
 
-    p5.draw = function() {
+    p.draw = function() {
+        renderMandelbrotSet(maxIterations);
+    }
+
+    p.mouseReleased = function(){
+        p.redraw();
 
     }
 
@@ -31,47 +38,43 @@ const MandelbrotSet = function(p5){
         for (let i = 0; i < WIDTH; i++) {
             for (let j = 0; j < HEIGHT; j++) {
 
-            let Z = Complex.of(
-                p5.map(i, 0, WIDTH, -2.5, 2.5),
-                p5.map(j, 0, HEIGHT, -2.5, 2.5)
-            );
+                let Z = Complex.of(
+                    p.map(i, 0, WIDTH, -2.5, 2.5),
+                    p.map(j, 0, HEIGHT, -2.5, 2.5)
+                );
 
-            let C = Complex.of(Z);
+                let C = Complex.of(Z);
 
-            let num_iters = 0;
+                let num_iters = 0;
 
-            while (Z.magnitude() < INFINITY && num_iters < max_iters) {
-                // Mandelbrot's equation: Zn+1 = Zn^2 + C
-                Z = Z.multiply(Z).add(C);
-                num_iters++;
-            }
+                while (Z.magnitude() < INFINITY && num_iters < max_iters) {
+                    // Mandelbrot's equation: Zn+1 = Zn^2 + C
+                    Z = Z.multiply(Z).add(C);
+                    num_iters++;
+                }
 
-            let colorValue = normalizeToRGBValue(num_iters, max_iters);
+                let colorValue = normalizeToRGBValue(num_iters, max_iters);
 
-            // Uncomment for escape time coloring
-            //if (num_iters === max_iters) {
-            // colorValue = 0;
-            //}
+                if (escapeTimeColoring && num_iters === max_iters) {
+                    colorValue = 0;
+                }
 
-            let pix = (i + j * WIDTH) * 4;
-            p5.pixels[pix + 0] = colorValue;
-            p5.pixels[pix + 1] = colorValue;
-            p5.pixels[pix + 2] = colorValue;
-            p5.pixels[pix + 3] = 255;
+                let pixel = (i + j * WIDTH) * 4;
+                p.pixels[pixel + 0] = colorValue;
+                p.pixels[pixel + 1] = colorValue;
+                p.pixels[pixel + 2] = colorValue;
+                p.pixels[pixel + 3] = 255;
             }
         }
-        p5.updatePixels();
+        p.updatePixels();
     }
 
 
     const normalizeToRGBValue = (val, maxValue) => {
-      /*
-       * Take a value from 0 to @param maxValue
-       *   and map it to a scale of 0 to 255
-       */
-        let value = p5.map(val, 0, maxValue, 0, 1);
-        return p5.map(p5.sqrt(value), 0, 1, 0, 255);
+      // Scale @param val from a range of 0 to @param maxValue
+      //   to a range of 0 to 255 (RGB values)
+      
+        let value = p.map(val, 0, maxValue, 0, 1);
+        return p.map(Math.sqrt(value), 0, 1, 0, 255);
     }
-}
-
-export default MandelbrotSet;
+});
