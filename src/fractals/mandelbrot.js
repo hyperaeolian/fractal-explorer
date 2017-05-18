@@ -1,12 +1,14 @@
-import Complex from '../complex';
+import Complex from '../complex'
 
 // Parameters for user control: Iterations, Infinity, Color, Zoom
 
 export default new window.p5(function(p){
     
-    const WIDTH = 600;
-    const HEIGHT = 600;
+    const WIDTH = 550;
+    const HEIGHT = 550;
     const INFINITY = 50;
+
+    const normalize = p.map;
 
     let maxIterations = 100;
     let escapeTimeColoring = false;
@@ -18,24 +20,22 @@ export default new window.p5(function(p){
     }
 
 
-    p.setup = function() {
-        let canvas = p.createCanvas(WIDTH, HEIGHT)
+    p.setup = function(){
+        p.createCanvas(WIDTH, HEIGHT)
             .parent('renderedOutputArea');
         p.loadPixels();
         p.pixelDensity(1);
         p.noLoop();
-
     }
 
 
-    p.draw = function() {
-        _renderMandelbrotSet(maxIterations);
+    p.draw = function(){
+         _renderMandelbrotSet(maxIterations);
     }
 
 
     p.mouseReleased = function(){
         p.redraw();
-        return false;
     }
 
     const _renderMandelbrotSet = function(max_iters){
@@ -43,8 +43,8 @@ export default new window.p5(function(p){
             for (let j = 0; j < HEIGHT; j++) {
 
                 let Z = Complex.of(
-                    p.map(i, 0, WIDTH, -2.5, 2.5),
-                    p.map(j, 0, HEIGHT, -2.5, 2.5)
+                    normalize(i, 0, WIDTH, -2.5, 2.5),
+                    normalize(j, 0, HEIGHT, -2.5, 2.5)
                 );
 
                 let C = Complex.of(Z);
@@ -78,7 +78,7 @@ export default new window.p5(function(p){
       // Scale @param val from a range of 0 to @param maxValue
       //   to a range of 0 to 255 (RGB values)
       
-        let value = p.map(val, 0, maxValue, 0, 1);
-        return p.map(Math.sqrt(value), 0, 1, 0, 255);
+        let value = normalize(val, 0, maxValue, 0, 1);
+        return normalize(Math.sqrt(value), 0, 1, 0, 255);
     }
 });
