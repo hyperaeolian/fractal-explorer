@@ -1,8 +1,37 @@
-import {run} from '@cycle/run'
+import xs from 'xstream'
+import run from '@cycle/run'
 import {h3, div, input, label, makeDOMDriver} from '@cycle/dom'
 
 import makeSketchDriver from './drivers/sketchDriver'
+import MakeSlider from './components/slider'
+
 import MandelbrotSet from './fractals/mandelbrot'
+
+
+function main(sources){
+
+    // Create a stream from the props for the iters slider
+    const itrProps$ = xs.of({
+        label: 'Number of Iterations',
+        min: 100,
+        max: 800,
+        step: 10,
+        value: 100
+    });
+
+    // Create a slider for numberOfIterations
+    const numItersSlider = MakeSlider({
+        DOM: sources.DOM,
+        props: itrProps$      
+    });
+
+    const numItersVTree$ = numItersSlider.DOM;
+    const numItersValue$ = numItersSlider.value;
+
+    const virtualDOM$ = numItersVTree$.map(tree => div([ tree ]));
+
+    return { DOM: virtualDOM$, Sketch: numItersValue$ }
+}
 
 
 const Drivers = {
@@ -10,33 +39,5 @@ const Drivers = {
     Sketch: makeSketchDriver(MandelbrotSet)
 }
 
-
-function main(sources){
-    const input$ = sources.DOM
-        .select('#numIterations')
-        .events('input');
-
-    const numIterations$ = input$
-        .map(e => e.target.value)
-        .startWith('100');
-
-    const virtualDOM$ = numIterations$.map(numIters => {
-        return div([
-            h3(numIters|0),
-            label('Number of Iterations'),
-            input('#numIterations', {
-                attrs: {
-                    type: 'range',
-                    min: 100,
-                    value: numIters|0,
-                    max: 1000,
-                    step: 10
-                }
-            })
-        ])
-    });
-
-    return { DOM: virtualDOM$, Sketch: numIterations$ }
-}
 
 run(main, Drivers);
