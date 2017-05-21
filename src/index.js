@@ -1,10 +1,10 @@
 import xs from 'xstream'
 import run from '@cycle/run'
-import {h3, div, input, label, makeDOMDriver} from '@cycle/dom'
-
+import {h3, p, div, input, label, makeDOMDriver} from '@cycle/dom'
+import isolate from '@cycle/isolate'
 import makeSketchDriver from './drivers/sketchDriver'
-import MakeSlider from './components/slider'
-
+import Slider from './components/slider'
+import ToggleButton from './components/toggleButton'
 import MandelbrotSet from './fractals/mandelbrot'
 
 
@@ -20,17 +20,30 @@ function main(sources){
     });
 
     // Create a slider for numberOfIterations
-    const numItersSlider = MakeSlider({
+    const numItersSlider = isolate(Slider)({
         DOM: sources.DOM,
         props: itrProps$      
     });
 
-    const numItersVTree$ = numItersSlider.DOM;
-    const numItersValue$ = numItersSlider.value;
+    // Create a toggle button for `Escape Coloring` param
+    const escBtn = ToggleButton({ 
+        DOM: sources.DOM,
+        props: { label: "Escape Coloring" } 
+    });
 
-    const virtualDOM$ = numItersVTree$.map(tree => div([ tree ]));
+    const numItersView$ = numItersSlider.DOM;
+    const numItersState$ = numItersSlider.value;
 
-    return { DOM: virtualDOM$, Sketch: numItersValue$ }
+    const escColoringView$ = escBtn.DOM;
+
+    const AppView$ = xs.combine(numItersView$, escColoringView$)
+        .map(([iters, esc]) => 
+            div([
+                iters, esc
+            ])
+        );
+    
+    return { DOM: AppView$, Sketch: numItersState$ }
 }
 
 

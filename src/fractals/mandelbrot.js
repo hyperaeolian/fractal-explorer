@@ -14,9 +14,10 @@ export default new window.p5(function(p){
     let escapeTimeColoring = false;
 
 
-    p.update = iters => {
-        console.log(`Updating with the following items ${iters}`);
+    p.update = function(iters) {
         maxIterations = iters;
+       // maxIterations = params['iters'] || maxIterations;
+       // escapeTimeColoring = params['escColor'] || escapeTimeColoring;
     }
 
 
