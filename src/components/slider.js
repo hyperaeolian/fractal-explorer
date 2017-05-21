@@ -1,8 +1,7 @@
-import isolate from '@cycle/isolate'
 import {div, label, strong, input} from '@cycle/dom'
 
 
-function Slider(sources){
+export default function Slider(sources){
 
     // Get the updated value for the slider
     const update$ = sources.DOM
@@ -20,10 +19,10 @@ function Slider(sources){
                 step: props.step,
                 value: updatedValue
             })).startWith(props)
-        ).flatten().remember();
+        ).flatten();
 
     // Construct the template for our labeled slider component
-    const vTree$ = state$.map(state =>
+    const view$ = state$.map(state =>
         div('.param-slider-component', [
             label('.slider-label', [
                 `${state.label}: `, strong(state.value)
@@ -42,12 +41,9 @@ function Slider(sources){
 
     // Pass the template and updated value back to the parent
     const sinks = {
-        DOM: vTree$,
+        DOM: view$,
         value: state$.map(state => state.value)
     };
 
     return sinks;
 }
-
-// Isolate slider instances so that they act independently of one another
-export default isolate(Slider)
