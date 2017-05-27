@@ -20,7 +20,7 @@ function main(sources){
     });
 
     // Create a slider for numberOfIterations
-    const numItersSlider = isolate(Slider)({
+    const numItersSlider = Slider({
         DOM: sources.DOM,
         props: itrProps$      
     });
@@ -35,15 +35,19 @@ function main(sources){
     const numItersState$ = numItersSlider.value;
 
     const escColoringView$ = escBtn.DOM;
+    const escColoringState$ = escBtn.state;
+
 
     const AppView$ = xs.combine(numItersView$, escColoringView$)
-        .map(([iters, esc]) => 
-            div([
-                iters, esc
-            ])
+        .map(([itersView, escView]) => 
+            div([ itersView, escView ])
         );
+
+    const AppState$ = xs.combine(numItersState$, escColoringState$)
+        .map(([iters, esc]) => ({ iters, esc }));
+
     
-    return { DOM: AppView$, Sketch: numItersState$ }
+    return { DOM: AppView$, Sketch: AppState$ }
 }
 
 
