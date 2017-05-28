@@ -23,7 +23,7 @@ export default function toggleButton(sources){
                 })
             ])
         );
-    
+   // state$.shamefullySendNext();
     return {
         DOM: view$,
         state: state$.map(state => state)

@@ -19,7 +19,8 @@ export default function Slider(sources){
                 step: props.step,
                 value: updatedValue
             })).startWith(props)
-        ).flatten();
+        ).flatten()
+        .remember();
 
     // Construct the template for our labeled slider component
     const view$ = state$.map(state =>

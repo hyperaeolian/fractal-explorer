@@ -19,10 +19,23 @@ function main(sources){
         value: 100
     });
 
+    const infProps$ = xs.of({
+        label: 'Upper Bound',
+        min: 10,
+        max: 100,
+        step: 1,
+        value: 20
+    });
+
     // Create a slider for numberOfIterations
     const numItersSlider = Slider({
         DOM: sources.DOM,
         props: itrProps$      
+    });
+
+    const infinitySlider = isolate(Slider)({
+        DOM: sources.DOM,
+        props: infProps$
     });
 
     // Create a toggle button for `Escape Coloring` param
@@ -34,17 +47,20 @@ function main(sources){
     const numItersView$ = numItersSlider.DOM;
     const numItersState$ = numItersSlider.value;
 
+    const infinityView$ = infinitySlider.DOM;
+    const infinityState$ = infinitySlider.value;
+
     const escColoringView$ = escBtn.DOM;
     const escColoringState$ = escBtn.state;
 
 
-    const AppView$ = xs.combine(numItersView$, escColoringView$)
-        .map(([itersView, escView]) => 
-            div([ itersView, escView ])
+    const AppView$ = xs.combine(numItersView$, infinityView$, escColoringView$)
+        .map(([itersView, infView, escView]) => 
+            div([ escView, infView, itersView ])
         );
 
-    const AppState$ = xs.combine(numItersState$, escColoringState$)
-        .map(([iters, esc]) => ({ iters, esc }));
+    const AppState$ = xs.combine(numItersState$, infinityState$, escColoringState$)
+        .map(([iters, bound, esc]) => ({ iters, bound, esc }));
 
     
     return { DOM: AppView$, Sketch: AppState$ }
