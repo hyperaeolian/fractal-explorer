@@ -1,17 +1,17 @@
 import xs from 'xstream'
-import run from '@cycle/run'
+import * as Cycle from '@cycle/run'
 import {h3, p, div, input, label, makeDOMDriver} from '@cycle/dom'
-import isolate from '@cycle/isolate'
+
 import makeSketchDriver from './drivers/sketchDriver'
-import Slider from './components/slider'
-import ToggleButton from './components/toggleButton'
 import MandelbrotSet from './fractals/mandelbrot'
+import ComponentFactory from './components/factory'
 
 
 function main(sources){
 
-    // Create a stream from the props for the iters slider
-    const itrProps$ = xs.of({
+    const Factory = new ComponentFactory(sources);
+
+    const itrSlider = Factory.createSlider({
         label: 'Number of Iterations',
         min: 100,
         max: 800,
@@ -19,7 +19,7 @@ function main(sources){
         value: 100
     });
 
-    const infProps$ = xs.of({
+    const infSlider = Factory.createSlider({
         label: 'Upper Bound',
         min: 10,
         max: 100,
@@ -27,50 +27,31 @@ function main(sources){
         value: 20
     });
 
-    // Create a slider for numberOfIterations
-    const numItersSlider = Slider({
-        DOM: sources.DOM,
-        props: itrProps$      
+    const escButton = Factory.createToggleButton({
+        label: "Escape Coloring"
     });
 
-    const infinitySlider = isolate(Slider)({
-        DOM: sources.DOM,
-        props: infProps$
-    });
+    const AppView$ = xs.combine(
+        itrSlider.view$,
+        infSlider.view$,
+        escButton.view$
+        ).map(views => div([ ...views ]));
 
-    // Create a toggle button for `Escape Coloring` param
-    const escBtn = ToggleButton({ 
-        DOM: sources.DOM,
-        props: { label: "Escape Coloring" } 
-    });
-
-    const numItersView$ = numItersSlider.DOM;
-    const numItersState$ = numItersSlider.value;
-
-    const infinityView$ = infinitySlider.DOM;
-    const infinityState$ = infinitySlider.value;
-
-    const escColoringView$ = escBtn.DOM;
-    const escColoringState$ = escBtn.state;
-
-
-    const AppView$ = xs.combine(numItersView$, infinityView$, escColoringView$)
-        .map(([itersView, infView, escView]) => 
-            div([ escView, infView, itersView ])
-        );
-
-    const AppState$ = xs.combine(numItersState$, infinityState$, escColoringState$)
-        .map(([iters, bound, esc]) => ({ iters, bound, esc }));
+    const AppState$ = xs.combine(
+        itrSlider.value$,
+        infSlider.value$,
+        escButton.state$
+        ).map(([iters, bound, esc]) => ({ iters, bound, esc }));
 
     
-    return { DOM: AppView$, Sketch: AppState$ }
+    return {
+        DOM: AppView$,
+        Sketch: AppState$
+    }
 }
 
 
-const Drivers = {
+Cycle.run(main, {
     DOM: makeDOMDriver('#controls'),
     Sketch: makeSketchDriver(MandelbrotSet)
-}
-
-
-run(main, Drivers);
+});
