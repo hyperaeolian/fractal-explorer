@@ -1,16 +1,15 @@
 import xs from 'xstream'
+import debounce from 'xstream/extra/debounce'
 
 
 export default function makeSketchDriver(App){
     
-    function sketchDriver(parameters$){
-        parameters$.addListener({
+    return function sketchDriver(parameters$){
+        parameters$.compose(debounce(500))
+        .addListener({
             next: params => App.update(params),
-            error: err => { console.warn("[Error] Sketch Driver -- ", err); },
+            error: err => console.warn("[Error] Sketch Driver -- ", err),
             complete: () => {}
         });
     }
-
-    return sketchDriver;
-
 }
