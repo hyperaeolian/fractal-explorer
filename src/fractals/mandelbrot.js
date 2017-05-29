@@ -16,7 +16,7 @@ export default new window.p5(function(p){
 
     p.update = function(state) {
         MaxIterations = state.iters|0;
-        UpperBound = state.bound;
+        UpperBound = state.bound|0;
         ColorEscapedPixels = state.esc;
     }
 
@@ -66,17 +66,19 @@ export default new window.p5(function(p){
                     num_iters++;
                 }
 
-                let colorValue = _normalizeToRGBValue(num_iters, max_iters);
+                let colorValue;
 
                 if (colorEsc && num_iters === max_iters) {
                     colorValue = 0;
                 }
+                
+                colorValue = _normalizeToRGBValue(num_iters, max_iters);
 
                 let pixel = (i + j * WIDTH) * 4;
-                p.pixels[pixel + 0] = colorValue;
-                p.pixels[pixel + 1] = colorValue;
-                p.pixels[pixel + 2] = colorValue;
-                p.pixels[pixel + 3] = 255;
+                p.pixels[pixel] = colorValue;
+                p.pixels[pixel+1] = colorValue;
+                p.pixels[pixel+2] = colorValue;
+                p.pixels[pixel+3] = 250;
             }
         }
         p.updatePixels();
@@ -84,6 +86,7 @@ export default new window.p5(function(p){
 
 
     const _normalizeToRGBValue = (val, maxValue) => {
+        // TODO: memoize me
       // Scale @param val from a range of 0 to @param maxValue
       //   to a range of 0 to 255 (RGB values)
       

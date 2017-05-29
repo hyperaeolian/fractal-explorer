@@ -4,38 +4,37 @@ import Slider from './slider'
 import ToggleButton from './toggleButton' 
 
 
-export default class ComponentFactory {
-	constructor(sources){
-		this._sources = sources;
+export function Register(components){
+	return {
+		views: components.map(cmpnt => cmpnt.view$),
+		states: components.map(cmpnt => cmpnt.state$)
 	}
+}
 
-	createSlider(props){
-		const params = {
-			DOM: this._sources.DOM,
-			props: xs.of(props),
-		};
+export function ComponentFactory(sources){
+	return type => {
+		return props => {
+			let componentType;
+			let params = { DOM: sources.DOM, props };
+			
+			switch(type){
+				case 'Slider':
+					params['props'] = xs.of(props);
+					componentType = Slider;
+					break;
+				case 'Button':
+					componentType = ToggleButton;
+					break;
+			}
 
-		const slider = isolate(Slider)(params);
+			const component = isolate(componentType)(params);
+			
+			return {
+				instance: component,
+				view$: component.DOM,
+				state$: component.value
+			}
+		}
 		
-		return {
-			instance: slider,
-			view$: slider.DOM,
-			value$: slider.value
-		}
-	}
-
-	createToggleButton(props){
-		const params = {
-			DOM: this._sources.DOM,
-			props
-		};
-
-		const button = isolate(ToggleButton)(params);
-
-		return {
-			instance: button,
-			view$: button.DOM,
-			state$: button.state
-		}
 	}
 }

@@ -26,6 +26,6 @@ export default function toggleButton(sources){
    // state$.shamefullySendNext();
     return {
         DOM: view$,
-        state: state$.map(state => state)
+        value: state$.map(state => state)
     }
 }
