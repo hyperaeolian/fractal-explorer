@@ -11,7 +11,7 @@ function main(sources){
 
     const Factory = ComponentFactory(sources);
     const createSlider = Factory('Slider');
-    const createButton = Factory('Button');
+    const createToggleButton = Factory('ToggleButton');
 
     const itrSlider = createSlider({
         label: 'Number of Iterations',
@@ -36,21 +36,23 @@ function main(sources){
         value: 0
     };
 
-    // TODO: create reset button to clear params
-
     const colorSliders = ['Red', 'Green', 'Blue', 'Alpha']
         .map(label => createSlider(
             Object.assign(
-                { label: `Color - ${label}`},
+                { label: `Color--${label}`},
                 colorSliderParams
             )
         )
     );
 
-    const escButton = createButton({
+    const escButton = createToggleButton({
         label: "Escape Coloring"
     });
 
+    // TODO: create reset button to clear params
+
+    // Register our components so that we can perform bulk
+    //  operations on them
     const registry = Register([
         itrSlider,
         infSlider,
@@ -58,11 +60,22 @@ function main(sources){
         escButton
     ]);
 
+    // Put component states in a form that's readable for the sketch
+    const makeStatesObject = states => ({
+            "iterations": states[itrSlider.id],
+            "bound": states[infSlider.id],
+            "red": states[colorSliders[0].id],
+            "green": states[colorSliders[1].id],
+            "blue": states[colorSliders[2].id],
+            "alpha": states[colorSliders[3].id],
+            "esc": states[escButton.id]
+        });
+
     const AppView$ = xs.combine(...registry.views)
         .map(views => div([ ...views ]));
 
     const AppState$ = xs.combine(...registry.states)
-        .map(([iters, bound, r, g, b, a, esc]) => ({ iters, bound, esc }));
+        .map(states => makeStatesObject(states));
 
     
     return {
