@@ -13,10 +13,20 @@ export default new window.p5(function(p){
     let UpperBound = 50;
     let ColorEscapedPixels = false;
 
+    let Red = 0;
+    let Green = 0;
+    let Blue = 0;
+    let Alpha = 0;
+
 
     p.update = function(state) {
-        MaxIterations = state.iters|0;
+        console.log(`State: ${JSON.stringify(state)}`);
+        MaxIterations = state.iterations|0;
         UpperBound = state.bound|0;
+        Red = state.red|0;
+        Green = state.green|0;
+        Blue = state.blue|0;
+        Alpha = state.alpha|0;
         ColorEscapedPixels = state.esc;
     }
 
