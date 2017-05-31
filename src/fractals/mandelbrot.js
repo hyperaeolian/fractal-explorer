@@ -10,7 +10,7 @@ export default new window.p5(function(p){
     let render;
 
     const State = {
-        maxIterations: 100,
+        maxIterations: 10,
         upperBound: 20,
         escapeColoring: false,
         red: 0,
@@ -18,14 +18,20 @@ export default new window.p5(function(p){
         blue: 0
     };
 
+    const DefaultState = Object.assign({}, State);
+
     p.update = function(state) {
         //console.log(`State: ${JSON.stringify(state)}`);
-        State.maxIterations  = state.iterations|0;
-        State.upperBound     = state.bound|0;
-        State.red            = state.red|0;
-        State.green          = state.green|0;
-        State.blue           = state.blue|0;
-        State.escapeColoring = state.esc;
+        if (state.shouldReset){
+            // Set state to defaults
+        } else {
+            State.maxIterations  = state.iterations|0;
+            State.upperBound     = state.bound|0;
+            State.red            = state.red|0;
+            State.green          = state.green|0;
+            State.blue           = state.blue|0;
+            State.escapeColoring = state.esc;
+        }
         render();
     }
 

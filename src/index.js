@@ -15,10 +15,10 @@ function main(sources){
 
     const itrSlider = createSlider({
         label: 'Number of Iterations',
-        min: 100,
+        min: 10,
         max: 800,
         step: 10,
-        value: 100
+        value: 10
     });
 
     const infSlider = createSlider({

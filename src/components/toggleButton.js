@@ -1,5 +1,5 @@
 import xs from 'xstream'
-import {div, input, label} from '@cycle/dom'
+import {div, strong, input, label} from '@cycle/dom'
 
 const cssClass = '.toggle-button';
 
@@ -13,7 +13,7 @@ export default function toggleButton(sources){
     const view$ = state$
         .map(checked =>
             div([
-                label(sources.props.label),
+                label(strong(sources.props.label)),
                 input(cssClass, { 
                     attrs: {
                         type: 'checkbox',
@@ -22,7 +22,7 @@ export default function toggleButton(sources){
                 })
             ])
         );
-   // state$.shamefullySendNext();
+
     return {
         DOM: view$,
         value: state$.map(state => state)
