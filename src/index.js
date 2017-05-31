@@ -36,7 +36,7 @@ function main(sources){
         value: 0
     };
 
-    const colorSliders = ['Red', 'Green', 'Blue', 'Alpha']
+    const colorSliders = ['Red', 'Green', 'Blue']
         .map(label => createSlider(
             Object.assign(
                 { label: `Color--${label}`},
@@ -66,7 +66,6 @@ function main(sources){
             "red": states[colorSliders[0].id],
             "green": states[colorSliders[1].id],
             "blue": states[colorSliders[2].id],
-            "alpha": states[colorSliders[3].id],
             "esc": states[escButton.id]
     });
 

@@ -16,8 +16,7 @@ export default new window.p5(function(p){
         escapeColoring: false,
         red: 0,
         green: 0,
-        blue: 0,
-      //  alpha: 255
+        blue: 0
     };
 
     p.update = function(state) {
@@ -27,7 +26,6 @@ export default new window.p5(function(p){
         State.red = state.red|0;
         State.green = state.green|0;
         State.blue = state.blue|0;
-       // State.alpha = state.alpha|0;
         State.escapeColoring = state.esc;
         render();
     }
