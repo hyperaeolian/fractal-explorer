@@ -1,6 +1,5 @@
 import Complex from '../complex'
 
-// Parameters for user control: Iterations, Infinity, Color, Zoom
 
 export default new window.p5(function(p){
     
@@ -21,19 +20,18 @@ export default new window.p5(function(p){
 
     p.update = function(state) {
         //console.log(`State: ${JSON.stringify(state)}`);
-        State.maxIterations = state.iterations|0;
-        State.upperBound = state.bound|0;
-        State.red = state.red|0;
-        State.green = state.green|0;
-        State.blue = state.blue|0;
+        State.maxIterations  = state.iterations|0;
+        State.upperBound     = state.bound|0;
+        State.red            = state.red|0;
+        State.green          = state.green|0;
+        State.blue           = state.blue|0;
         State.escapeColoring = state.esc;
         render();
     }
 
 
     p.setup = function(){
-        p.createCanvas(WIDTH, HEIGHT)
-            .parent('renderedOutputArea');
+        p.createCanvas(WIDTH, HEIGHT).parent('renderedOutputArea');
         p.loadPixels();
         p.pixelDensity(1);
         p.noLoop();
@@ -41,12 +39,15 @@ export default new window.p5(function(p){
     }
 
 
-    p.draw = function(){
-         _renderMandelbrotSet(State);
+    p.draw = () => {
+        renderMandelbrotSet(State);
     }
 
 
-    const _renderMandelbrotSet = function(state){
+    const renderMandelbrotSet = function(state){
+        let num_iters;
+        let colorValue;
+
         for (let i = 0; i < WIDTH; i++) {
             for (let j = 0; j < HEIGHT; j++) {
 
@@ -57,42 +58,48 @@ export default new window.p5(function(p){
 
                 let C = Complex.of(Z);
 
-                let num_iters = 0;
+                num_iters = 0;
 
                 while (Z.magnitude() < state.upperBound &&
-                       num_iters < state.maxIterations) {
+                       num_iters < state.maxIterations)
+                {
                     // Mandelbrot's equation: Zn+1 = Zn^2 + C
                     Z = Z.multiply(Z).add(C);
                     num_iters++;
                 }
-
-                let colorValue;
-
+                
                 if (state.escapeColoring && num_iters === state.maxIterations) {
                     colorValue = 0;
+                } else {
+                    colorValue = normalizeRGBValue(
+                        num_iters,
+                        state.maxIterations
+                    );
                 }
-                
-                colorValue = _normalizeRGBValue(num_iters, state.maxIterations);
-                let Red = state.red + colorValue;
+    
+                let Red   = state.red   + colorValue;
                 let Green = state.green + colorValue;
-                let Blue = state.blue + colorValue;
+                let Blue  = state.blue  + colorValue;
                 
                 let pixel = (i + j * WIDTH) * 4;
-                p.pixels[pixel] = Red > 255 ? _normalizeRGBValue(Red) : Red;
-                p.pixels[pixel+1] = Green > 255 ? _normalizeRGBValue(Green) : Green;
-                p.pixels[pixel+2] = Blue > 255 ? _normalizeRGBValue(Blue): Blue;
+                p.pixels[pixel  ] = getValidRGBValue(Red);
+                p.pixels[pixel+1] = getValidRGBValue(Green);
+                p.pixels[pixel+2] = getValidRGBValue(Blue);
                 p.pixels[pixel+3] = 250;
             }
         }
+
         p.updatePixels();
     }
 
+    const getValidRGBValue = value => {
+        return value > 255 ? normalizeRGBValue(value) : value;
+    };
 
-    const _normalizeRGBValue = (val, maxValue=510) => {
+    const normalizeRGBValue = (val, maxValue=510) => {
         // TODO: memoize me
-      // Scale @param val from a range of 0 to @param maxValue
-      //   to a range of 0 to 255 (RGB values)
-      
+        // Scales @param val from a range of 0 to @param maxValue
+        //   to a range of 0 to 255 (RGB values)
         let value = normalize(val, 0, maxValue, 0, 1);
         return normalize(Math.sqrt(value), 0, 1, 0, 255);
     }
