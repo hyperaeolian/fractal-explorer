@@ -8,36 +8,28 @@ export default new window.p5(function(p){
     const HEIGHT = 550;
 
     const normalize = p.map;
+    let render;
 
-    let MaxIterations = 100;
-    let UpperBound = 50;
-    let ColorEscapedPixels = false;
-
-    let Red = 0;
-    let Green = 0;
-    let Blue = 0;
-    let Alpha = 250;
-
-    const CurrentState = {
+    const State = {
         maxIterations: 100,
         upperBound: 20,
         escapeColoring: false,
         red: 0,
         green: 0,
         blue: 0,
-        alpha: 255
+      //  alpha: 255
     };
 
-
     p.update = function(state) {
-        console.log(`State: ${JSON.stringify(state)}`);
-        CurrentState.maxIterations = state.iterations|0;
-        CurrentState.upperBound = state.bound|0;
-        CurrentState.red = state.red|0;
-        CurrentState.green = state.green|0;
-        CurrentState.blue = state.blue|0;
-        CurrentState.alpha = state.alpha|0;
-        CurrentState.escapeColoring = state.esc;
+        //console.log(`State: ${JSON.stringify(state)}`);
+        State.maxIterations = state.iterations|0;
+        State.upperBound = state.bound|0;
+        State.red = state.red|0;
+        State.green = state.green|0;
+        State.blue = state.blue|0;
+       // State.alpha = state.alpha|0;
+        State.escapeColoring = state.esc;
+        render();
     }
 
 
@@ -47,17 +39,14 @@ export default new window.p5(function(p){
         p.loadPixels();
         p.pixelDensity(1);
         p.noLoop();
+        render = p.redraw.bind(this);
     }
 
 
     p.draw = function(){
-         _renderMandelbrotSet(CurrentState);
+         _renderMandelbrotSet(State);
     }
 
-
-    p.mouseReleased = function(){
-        setTimeout(p.redraw.bind(this), 500);
-    }
 
     const _renderMandelbrotSet = function(state){
         for (let i = 0; i < WIDTH; i++) {
@@ -86,15 +75,15 @@ export default new window.p5(function(p){
                 }
                 
                 colorValue = _normalizeRGBValue(num_iters, state.maxIterations);
-                Red = state.red + colorValue;
-                Green = state.green + colorValue;
-                Blue = state.blue + colorValue;
+                let Red = state.red + colorValue;
+                let Green = state.green + colorValue;
+                let Blue = state.blue + colorValue;
                 
                 let pixel = (i + j * WIDTH) * 4;
-                p.pixels[pixel] = Red > 255 ? _normalizeRGBValue(state.red + colorValue) : Red;
-                p.pixels[pixel+1] = Green > 255 ? _normalizeRGBValue(state.green + colorValue) : Green;
-                p.pixels[pixel+2] = Blue > 255 ? _normalizeRGBValue(state.blue + colorValue): Blue;
-                p.pixels[pixel+3] = 250;//_normalizeRGBValue(state.alpha + colorValue);
+                p.pixels[pixel] = Red > 255 ? _normalizeRGBValue(Red) : Red;
+                p.pixels[pixel+1] = Green > 255 ? _normalizeRGBValue(Green) : Green;
+                p.pixels[pixel+2] = Blue > 255 ? _normalizeRGBValue(Blue): Blue;
+                p.pixels[pixel+3] = 250;
             }
         }
         p.updatePixels();

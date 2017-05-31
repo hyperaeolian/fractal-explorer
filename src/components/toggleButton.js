@@ -8,8 +8,7 @@ export default function toggleButton(sources){
         .select(cssClass)
         .events('change')
         .map(ev => ev.target.checked)
-        .startWith(false)
-        .debug(`[ToggleButton State] "${sources.props.label}"`);
+        .startWith(false);
 
     const view$ = state$
         .map(checked =>

@@ -41,9 +41,8 @@ function main(sources){
             Object.assign(
                 { label: `Color--${label}`},
                 colorSliderParams
-            )
-        )
-    );
+            ))
+        );
 
     const escButton = createToggleButton({
         label: "Escape Coloring"
@@ -69,7 +68,7 @@ function main(sources){
             "blue": states[colorSliders[2].id],
             "alpha": states[colorSliders[3].id],
             "esc": states[escButton.id]
-        });
+    });
 
     const AppView$ = xs.combine(...registry.views)
         .map(views => div([ ...views ]));
