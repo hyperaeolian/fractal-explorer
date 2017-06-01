@@ -29,18 +29,18 @@ function main(sources){
         value: 20
     });
 
-    const colorSliderParams = {
+    const hsbSliderParams = {
         min: 0,
         max: 255,
         step: 5,
         value: 0
     };
 
-    const colorSliders = ['Red', 'Green', 'Blue']
+    const hsbSliders = ['Hue', 'Saturation', 'Brightness']
         .map(label => createSlider(
             Object.assign(
                 { label: `Color--${label}`},
-                colorSliderParams
+                hsbSliderParams
             ))
         );
 
@@ -55,7 +55,7 @@ function main(sources){
     const registry = Register([
         itrSlider,
         infSlider,
-        ...colorSliders,
+        ...hsbSliders,
         escButton
     ]);
 
@@ -63,9 +63,9 @@ function main(sources){
     const makeStatesObject = states => ({
             "iterations": states[itrSlider.id],
             "bound": states[infSlider.id],
-            "red": states[colorSliders[0].id],
-            "green": states[colorSliders[1].id],
-            "blue": states[colorSliders[2].id],
+            "hue": states[hsbSliders[0].id],
+            "saturation": states[hsbSliders[1].id],
+            "brightness": states[hsbSliders[2].id],
             "esc": states[escButton.id]
     });
 

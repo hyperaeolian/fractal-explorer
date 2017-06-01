@@ -13,9 +13,9 @@ export default new window.p5(function(p){
         maxIterations: 100,
         escapeRadius: 20,
         escapeColoring: false,
-        red: 0,
-        green: 0,
-        blue: 0
+        hue: 0,
+        saturation: 0,
+        brightness: 0
     };
 
     const DefaultState = Object.assign({}, State);
@@ -27,9 +27,9 @@ export default new window.p5(function(p){
         } else {
             State.maxIterations  = state.iterations|0;
             State.escapeRadius   = state.bound|0;
-            State.red            = state.red|0;
-            State.green          = state.green|0;
-            State.blue           = state.blue|0;
+            State.hue            = state.hue|0;
+            State.saturation     = state.saturation|0;
+            State.brightness           = state.brightness|0;
             State.escapeColoring = state.esc;
         }
         render();
@@ -40,6 +40,7 @@ export default new window.p5(function(p){
         p.createCanvas(WIDTH, HEIGHT).parent('renderedOutputArea');
         p.loadPixels();
         p.pixelDensity(1);
+        p.colorMode(p.HSB, 255);
         p.noLoop();
         render = p.redraw.bind(this);
     }
@@ -53,7 +54,7 @@ export default new window.p5(function(p){
     const renderMandelbrotSet = function(state){
         let iteration;
         let colorIndex;
-        let red, green, blue;
+        let hue, saturation, brightness;
 
         const N = state.maxIterations;
 
@@ -91,17 +92,17 @@ export default new window.p5(function(p){
                             colorIndex = 0;
                         }
                     }
-                    colorIndex = normalizeRGBValue(iteration, N);
+                    colorIndex = normalizeHSBValue(iteration, N);
                 }
     
-                red   = state.red   + colorIndex;
-                green = state.green + colorIndex;
-                blue  = state.blue  + colorIndex;
+                hue   = state.hue   + colorIndex;
+                saturation = state.saturation + colorIndex;
+                brightness = state.brightness + colorIndex;
                 
                 let pixel = (i + j * WIDTH) * 4;
-                p.pixels[pixel  ] = getValidRGBValue(red);
-                p.pixels[++pixel] = getValidRGBValue(green);
-                p.pixels[++pixel] = getValidRGBValue(blue);
+                p.pixels[pixel  ] = getValidHSBValue(hue);
+                p.pixels[++pixel] = getValidHSBValue(saturation);
+                p.pixels[++pixel] = getValidHSBValue(brightness);
                 p.pixels[++pixel] = 250;
             }
         }
@@ -109,14 +110,12 @@ export default new window.p5(function(p){
         p.updatePixels();
     }
 
-    const getValidRGBValue = value => {
-        return value > 255 ? normalizeRGBValue(value) : value;
+    const getValidHSBValue = value => {
+        return value > 255 ? normalizeHSBValue(value) : value;
     };
 
-    const normalizeRGBValue = (val, maxValue=510) => {
+    const normalizeHSBValue = (val, maxValue=510) => {
         // TODO: memoize me
-        // Scales @param val from a range of 0 to @param maxValue
-        //   to a range of 0 to 255 (RGB values)
         let value = normalize(val, 0, maxValue, 0, 1);
         return normalize(Math.sqrt(value), 0, 1, 0, 255);
     }
