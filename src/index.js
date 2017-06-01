@@ -14,15 +14,15 @@ function main(sources){
     const createToggleButton = Factory('ToggleButton');
 
     const itrSlider = createSlider({
-        label: 'Number of Iterations',
+        label: 'Iterations',
         min: 10,
-        max: 800,
+        max: 1000,
         step: 10,
-        value: 10
+        value: 100
     });
 
     const infSlider = createSlider({
-        label: 'Upper Bound',
+        label: 'Escape Radius',
         min: 10,
         max: 100,
         step: 1,

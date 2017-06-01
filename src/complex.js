@@ -62,10 +62,12 @@ export default class Complex {
     }
 
     pow(exp){
+        // Returns a real number
         return Math.pow(this._real, exp) + Math.pow(this._imag, exp);
     }
 
     magnitude(){
+        // Returns the absolute value of this complex number
         return Math.sqrt(this.pow(2));
     }
 

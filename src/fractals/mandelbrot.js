@@ -10,8 +10,8 @@ export default new window.p5(function(p){
     let render;
 
     const State = {
-        maxIterations: 10,
-        upperBound: 20,
+        maxIterations: 100,
+        escapeRadius: 20,
         escapeColoring: false,
         red: 0,
         green: 0,
@@ -26,7 +26,7 @@ export default new window.p5(function(p){
             // Set state to defaults
         } else {
             State.maxIterations  = state.iterations|0;
-            State.upperBound     = state.bound|0;
+            State.escapeRadius   = state.bound|0;
             State.red            = state.red|0;
             State.green          = state.green|0;
             State.blue           = state.blue|0;
@@ -51,8 +51,11 @@ export default new window.p5(function(p){
 
 
     const renderMandelbrotSet = function(state){
-        let num_iters;
-        let colorValue;
+        let iteration;
+        let colorIndex;
+        let red, green, blue;
+
+        const N = state.maxIterations;
 
         for (let i = 0; i < WIDTH; i++) {
             for (let j = 0; j < HEIGHT; j++) {
@@ -64,34 +67,42 @@ export default new window.p5(function(p){
 
                 let C = Complex.of(Z);
 
-                num_iters = 0;
+                iteration = 0;
 
-                while (Z.magnitude() < state.upperBound &&
-                       num_iters < state.maxIterations)
+                while (Z.magnitude() < state.escapeRadius && iteration < N)
                 {
                     // Mandelbrot's equation: Zn+1 = Zn^2 + C
                     Z = Z.multiply(Z).add(C);
-                    num_iters++;
+                    iteration++;
                 }
                 
-                if (state.escapeColoring && num_iters === state.maxIterations) {
-                    colorValue = 0;
+                if (state.escapeColoring && iteration === N) {
+                    colorIndex = 0;
                 } else {
-                    colorValue = normalizeRGBValue(
-                        num_iters,
-                        state.maxIterations
-                    );
+                    // Continuous coloring algorithm
+                    //  TODO: may need to lerp colorIndex value
+                    if (iteration < N){
+                        Z = Z.multiply(Z).add(C); iteration++;
+                        Z = Z.multiply(Z).add(C); iteration++;
+                        const logZ = Math.log(Z.pow(2)) / 2;
+                        const mu = iteration - Math.log(logZ / Math.log(2)) / Math.log(state.escapeRadius);
+                        colorIndex = mu / N * 768;
+                        if (colorIndex >= 768 || colorIndex < 0){
+                            colorIndex = 0;
+                        }
+                    }
+                    colorIndex = normalizeRGBValue(iteration, N);
                 }
     
-                let Red   = state.red   + colorValue;
-                let Green = state.green + colorValue;
-                let Blue  = state.blue  + colorValue;
+                red   = state.red   + colorIndex;
+                green = state.green + colorIndex;
+                blue  = state.blue  + colorIndex;
                 
                 let pixel = (i + j * WIDTH) * 4;
-                p.pixels[pixel  ] = getValidRGBValue(Red);
-                p.pixels[pixel+1] = getValidRGBValue(Green);
-                p.pixels[pixel+2] = getValidRGBValue(Blue);
-                p.pixels[pixel+3] = 250;
+                p.pixels[pixel  ] = getValidRGBValue(red);
+                p.pixels[++pixel] = getValidRGBValue(green);
+                p.pixels[++pixel] = getValidRGBValue(blue);
+                p.pixels[++pixel] = 250;
             }
         }
 
