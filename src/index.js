@@ -1,5 +1,5 @@
-import xs from 'xstream'
-import * as Cycle from '@cycle/run'
+import * as Cycle from '@cycle/rxjs-run'
+import Rx from 'rxjs'
 import {h3, p, div, input, label, makeDOMDriver} from '@cycle/dom'
 
 import makeSketchDriver from './drivers/sketchDriver'
@@ -69,13 +69,12 @@ function main(sources){
             "esc": states[escButton.id]
     });
 
-    const AppView$ = xs.combine(...registry.views)
+    const AppView$ = Rx.Observable.combineLatest(...registry.views)
         .map(views => div([ ...views ]));
 
-    const AppState$ = xs.combine(...registry.states)
+    const AppState$ = Rx.Observable.combineLatest(...registry.states)
         .map(states => makeStatesObject(states));
 
-    
     return {
         DOM: AppView$,
         Sketch: AppState$

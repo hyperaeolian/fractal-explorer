@@ -1,4 +1,4 @@
-import xs from 'xstream'
+import Rx from 'rxjs'
 import isolate from '@cycle/isolate'
 import Slider from './slider'
 import ToggleButton from './toggleButton' 
@@ -22,12 +22,13 @@ export function ComponentFactory(sources){
 
             switch(type){
                 case 'Slider':
-                    params['props'] = xs.of(props);
+                    params['props'] = Rx.Observable.of(props);
                     componentType = Slider;
                     break;
                 case 'ToggleButton':
                     componentType = ToggleButton;
                     break;
+
             }
 
             const component = isolate(componentType)(params);
