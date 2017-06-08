@@ -66,7 +66,7 @@ export default class Complex {
         return Math.pow(this._real, exp) + Math.pow(this._imag, exp);
     }
 
-    magnitude(){
+    modulus(){
         // Returns the absolute value of this complex number
         return Math.sqrt(this.pow(2));
     }

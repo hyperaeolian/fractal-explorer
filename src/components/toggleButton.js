@@ -8,7 +8,8 @@ export default function toggleButton(sources){
         .select(cssClass)
         .events('change')
         .map(ev => ev.target.checked)
-        .startWith(false);
+        .startWith(false)
+        .shareReplay(1);
 
     const view$ = state$
         .map(checked =>

@@ -2,8 +2,7 @@ import debounce from 'xstream/extra/debounce'
 
 export default function makeSketchDriver(App){
     
-    return function sketchDriver(parameters$){
-
+    return parameters$ => {
         parameters$
         .compose(debounce(500))
         .addListener({
