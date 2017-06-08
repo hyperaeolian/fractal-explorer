@@ -15,6 +15,10 @@ export default new window.p5(function(p){
         escapeRadius: 20,
         escapeColoring: false,
         hue: 0,
+        zoom: {
+            x: -2.5,
+            y: 2.5
+        },
         saturation: 0,
         brightness: 0
     };
@@ -31,6 +35,8 @@ export default new window.p5(function(p){
             State.hue            = state.hue|0;
             State.saturation     = state.saturation|0;
             State.brightness     = state.brightness|0;
+            State.zoom.x         = (state.zoom.x|0) * .01;
+            State.zoom.y         = (state.zoom.y|0) * .01;
             State.escapeColoring = state.esc;
         }
         render();
@@ -55,15 +61,13 @@ export default new window.p5(function(p){
     const renderMandelbrotSet = function(state){
         let itr;
         let colorValue;
-        let zoomX = -2.5;
-        let zoomY = 2.5;
 
         for (let i = 0; i < WIDTH; i++) {
             for (let j = 0; j < HEIGHT; j++) {
 
                 let Z = Complex.of(
-                    normalize(i, 0, WIDTH, zoomX, zoomY),
-                    normalize(j, 0, HEIGHT, zoomX, zoomY)
+                    normalize(i, 0, WIDTH, state.zoom.x, state.zoom.y),
+                    normalize(j, 0, HEIGHT, state.zoom.x, state.zoom.y)
                 );
 
                 let C = Complex.of(Z);

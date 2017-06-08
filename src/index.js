@@ -53,6 +53,22 @@ function main(sources){
         value: 10
     });
 
+    const xZoomSlider = createSlider({
+        label: "Zoom X",
+        min: -250,
+        max: 0,
+        step: 10,
+        value: -250
+    });
+
+    const yZoomSlider = createSlider({
+        label: "Zoom Y",
+        min: 0,
+        max: 250,
+        step: 10,
+        value: 250
+    });
+
     const escButton = createToggleButton({
         label: "Escape Coloring"
     });
@@ -67,6 +83,8 @@ function main(sources){
         hueSlider,
         satSlider,
         brightSlider,
+        xZoomSlider,
+        yZoomSlider,
         escButton
     ]);
 
@@ -77,6 +95,10 @@ function main(sources){
             "hue": states[hueSlider.id],
             "saturation": states[satSlider.id],
             "brightness": states[brightSlider.id],
+            "zoom": {
+                x: states[xZoomSlider.id],
+                y: states[yZoomSlider.id]
+            },
             "esc": states[escButton.id]
     });
 
