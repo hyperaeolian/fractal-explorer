@@ -17,8 +17,8 @@ function main(sources){
         label: 'Iterations',
         min: 10,
         max: 1000,
-        step: 10,
-        value: 100
+        step: 1,
+        value: 400
     });
 
     const infSlider = createSlider({
@@ -29,20 +29,29 @@ function main(sources){
         value: 20
     });
 
-    const hsbSliderParams = {
+    const hueSlider = createSlider({
+        label: "Hue",
         min: 0,
-        max: 255,
-        step: 5,
-        value: 0
-    };
+        max: 360,
+        step: 1,
+        value: 10
+    });
 
-    const hsbSliders = ['Hue', 'Saturation', 'Brightness']
-        .map(label => createSlider(
-            Object.assign(
-                { label: `Color--${label}`},
-                hsbSliderParams
-            ))
-        );
+    const satSlider = createSlider({
+        label: "Saturation",
+        min: 0,
+        max: 100,
+        step: 1,
+        value: 10
+    });
+
+    const brightSlider = createSlider({
+        label: "Brightness",
+        min: 0,
+        max: 100,
+        step: 1,
+        value: 10
+    });
 
     const escButton = createToggleButton({
         label: "Escape Coloring"
@@ -55,7 +64,9 @@ function main(sources){
     const registry = Register([
         itrSlider,
         infSlider,
-        ...hsbSliders,
+        hueSlider,
+        satSlider,
+        brightSlider,
         escButton
     ]);
 
@@ -63,9 +74,9 @@ function main(sources){
     const makeStatesObject = states => ({
             "iterations": states[itrSlider.id],
             "bound": states[infSlider.id],
-            "hue": states[hsbSliders[0].id],
-            "saturation": states[hsbSliders[1].id],
-            "brightness": states[hsbSliders[2].id],
+            "hue": states[hueSlider.id],
+            "saturation": states[satSlider.id],
+            "brightness": states[brightSlider.id],
             "esc": states[escButton.id]
     });
 
