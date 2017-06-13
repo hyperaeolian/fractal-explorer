@@ -15,28 +15,6 @@ export default class Complex {
         }
     }
 
-    _doOperation(operand, operation){
-        this._verifyIsComplexNumber(operand);
-        let real;
-        let imag;
-        switch (operation){
-            case '+':
-                real = this._real + operand.real();
-                imag = this._imag + operand.imag();
-                break;
-            case '-':
-                real = this._real - operand.real();
-                imag = this._imag - operand.imag();
-                break;
-            case '*':
-                real = this._real * operand.real() - this._imag * operand.imag();
-                imag = this._imag * operand.real() + this._real * operand.imag();
-                break;
-        }
-
-        return Complex.of(real, imag);
-    }
-
     static of(r, i){
         return new Complex(r, i);
     }
@@ -46,15 +24,27 @@ export default class Complex {
     imag(){ return this._imag; }
 
     add(operand){
-        return this._doOperation(operand, '+');
+        this._verifyIsComplexNumber(operand);
+        return Complex.of(
+            this._real + operand.real(),
+            this._imag + operand.imag()
+        );
     }
 
     subtract(operand){
-        return this._doOperation(operand, '-');
+        this._verifyIsComplexNumber(operand);
+        return Complex.of(
+            this._real - operand.real(),
+            this._imag - operand.imag()
+        );
     }
 
     multiply(operand){
-        return this._doOperation(operand, '*');
+        this._verifyIsComplexNumber(operand);
+        return Complex.of(
+            this._real * operand.real() - this._imag * operand.imag(),
+            this._imag * operand.real() + this._real * operand.imag()
+        );
     }
 
     divide(){
