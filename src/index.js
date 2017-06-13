@@ -85,7 +85,7 @@ function main(sources){
         brightSlider,
         xZoomSlider,
         yZoomSlider,
-        escButton
+       // escButton
     ]);
 
     // Put component states in a form that's readable for the sketch
@@ -95,10 +95,8 @@ function main(sources){
             "hue": states[hueSlider.id],
             "saturation": states[satSlider.id],
             "brightness": states[brightSlider.id],
-            "zoom": {
-                x: states[xZoomSlider.id],
-                y: states[yZoomSlider.id]
-            },
+            "zoomX": states[xZoomSlider.id],
+            "zoomY": states[yZoomSlider.id],
             "esc": states[escButton.id]
     });
 

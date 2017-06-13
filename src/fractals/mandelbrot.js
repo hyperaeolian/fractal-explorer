@@ -1,49 +1,47 @@
 import Complex from '../complex'
 
 
-export default new window.p5(function(p){
+export default new window.p5(function MandelbrotApp(p){
     
     const WIDTH = 512;
     const HEIGHT = 512;
     const epsilon = 0.00001;
 
     const normalize = p.map;
+    let State;
     let render;
 
-    const State = {
+    const DefaultState = {
         maxIters: 400,
         escapeRadius: 20,
         escapeColoring: false,
         hue: 0,
-        zoom: {
-            x: -2.5,
-            y: 2.5
-        },
+        zoomX: -2.5,
+        zoomY: 2.5,
         saturation: 0,
-        brightness: 0
+        brightness: 0,
+        reset: false
     };
 
-    const DefaultState = Object.assign({}, State);
-
     p.update = function(state) {
-        //console.log(`State: ${JSON.stringify(state)}`);
-        if (state.shouldReset){
-            // Set state to defaults
+        if (state.reset){
+            State = Object.assign({}, DefaultState);
         } else {
             State.maxIters       = state.iterations|0;
             State.escapeRadius   = state.bound|0;
             State.hue            = state.hue|0;
             State.saturation     = state.saturation|0;
             State.brightness     = state.brightness|0;
-            State.zoom.x         = (state.zoom.x|0) * .01;
-            State.zoom.y         = (state.zoom.y|0) * .01;
-            State.escapeColoring = state.esc;
+            State.zoomX         = (state.zoomX|0) * .01;
+            State.zoomY         = (state.zoomY|0) * .01;
+            //State.escapeColoring = state.esc;
         }
         render();
     }
 
 
     p.setup = function(){
+        State = Object.assign({}, DefaultState);
         p.createCanvas(WIDTH, HEIGHT).parent('renderedOutputArea');
         p.loadPixels();
         p.pixelDensity(1);
@@ -52,13 +50,12 @@ export default new window.p5(function(p){
         render = p.redraw.bind(this);
     }
 
-
     p.draw = () => {
         renderMandelbrotSet(State);
     }
 
 
-    const renderMandelbrotSet = function(state){
+    const renderMandelbrotSet = state => {
         let itr;
         let colorValue;
 
@@ -66,8 +63,8 @@ export default new window.p5(function(p){
             for (let j = 0; j < HEIGHT; j++) {
 
                 let Z = Complex.of(
-                    normalize(i, 0, WIDTH, state.zoom.x, state.zoom.y),
-                    normalize(j, 0, HEIGHT, state.zoom.x, state.zoom.y)
+                    normalize(i, 0, WIDTH, state.zoomX, state.zoomY),
+                    normalize(j, 0, HEIGHT, state.zoomX, state.zoomY)
                 );
 
                 let C = Complex.of(Z);
@@ -88,8 +85,7 @@ export default new window.p5(function(p){
                     Z = Z.multiply(Z).add(C); itr++;
 
                     // continuous coloring via renormalized iteration count
-                    let mu = itr - Math.log(Math.log(Z.modulus() * epsilon)) / Math.log(2.0);
-                    colorValue = mu;
+                    colorValue = itr - Math.log(Math.log(Z.modulus() * epsilon)) / Math.log(2.0);
                 }
                 
                 let hsb = getHSB(state, colorValue);
