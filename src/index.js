@@ -92,9 +92,11 @@ function main(sources){
     const makeStatesObject = states => ({
             "iterations": states[itrSlider.id],
             "bound": states[infSlider.id],
-            "hue": states[hueSlider.id],
-            "saturation": states[satSlider.id],
-            "brightness": states[brightSlider.id],
+            "hsb": {
+                "hue": states[hueSlider.id],
+                "saturation": states[satSlider.id],
+                "brightness": states[brightSlider.id]
+            },
             "zoomX": states[xZoomSlider.id],
             "zoomY": states[yZoomSlider.id],
             "esc": states[escButton.id]

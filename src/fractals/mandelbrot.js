@@ -1,3 +1,5 @@
+import memoize from 'memoizee'
+
 import Complex from '../complex'
 
 
@@ -7,7 +9,7 @@ export default new window.p5(function MandelbrotApp(p){
     const HEIGHT = 512;
     const epsilon = 0.00001;
 
-    const normalize = p.map;
+    const normalize = memoize(p.map, { primitive: true});
     let State;
     let render;
 
@@ -15,11 +17,9 @@ export default new window.p5(function MandelbrotApp(p){
         maxIters: 400,
         escapeRadius: 20,
         escapeColoring: false,
-        hue: 0,
         zoomX: -2.5,
         zoomY: 2.5,
-        saturation: 0,
-        brightness: 0,
+        hsb: { h: 0, s: 0, b: 0 },
         reset: false
     };
 
@@ -29,12 +29,13 @@ export default new window.p5(function MandelbrotApp(p){
         } else {
             State.maxIters       = state.iterations|0;
             State.escapeRadius   = state.bound|0;
-            State.hue            = state.hue|0;
-            State.saturation     = state.saturation|0;
-            State.brightness     = state.brightness|0;
             State.zoomX         = (state.zoomX|0) * .01;
             State.zoomY         = (state.zoomY|0) * .01;
-            //State.escapeColoring = state.esc;
+            State.hsb = {
+                h: state.hsb.hue|0,
+                s: state.hsb.saturation|0,
+                b: state.hsb.brightness|0
+            }
         }
         render();
     }
@@ -62,12 +63,12 @@ export default new window.p5(function MandelbrotApp(p){
         for (let i = 0; i < WIDTH; i++) {
             for (let j = 0; j < HEIGHT; j++) {
 
-                let Z = Complex.of(
+                let Z = new Complex(
                     normalize(i, 0, WIDTH, state.zoomX, state.zoomY),
                     normalize(j, 0, HEIGHT, state.zoomX, state.zoomY)
                 );
 
-                let C = Complex.of(Z);
+                let C = new Complex(Z);
 
                 itr = 0;
 
@@ -88,7 +89,7 @@ export default new window.p5(function MandelbrotApp(p){
                     colorValue = itr - Math.log(Math.log(Z.modulus() * epsilon)) / Math.log(2.0);
                 }
                 
-                let hsb = getHSB(state, colorValue);
+                let hsb = getNormedHSB(state.hsb, colorValue);
                 let pixel = (i + (j << 9)) << 2;
                 p.pixels[  pixel] = hsb.HUE;
                 p.pixels[++pixel] = hsb.SATURATION;
@@ -99,15 +100,15 @@ export default new window.p5(function MandelbrotApp(p){
         p.updatePixels();
     }
 
-    const getHSB = (state, val) => {
-        let h = state.hue + val;
-        let s = state.saturation + val;
-        let b = state.brightness + val;
+    const getNormedHSB = (hsb, val) => {
+        let h = hsb.h + val;
+        let s = hsb.s + val;
+        let b = hsb.b + val;
 
         return {
             HUE:        h <= 360 ? h : p.norm(h, 0, 360),
             SATURATION: s <= 100 ? s : p.norm(s, 0, 100),
             BRIGHTNESS: b <= 100 ? b : p.norm(b, 0, 100)
         }
-    }
+    };
 });

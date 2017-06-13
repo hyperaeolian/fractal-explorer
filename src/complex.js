@@ -25,7 +25,7 @@ export default class Complex {
 
     add(operand){
         this._verifyIsComplexNumber(operand);
-        return Complex.of(
+        return new Complex(
             this._real + operand.real(),
             this._imag + operand.imag()
         );
@@ -33,7 +33,7 @@ export default class Complex {
 
     subtract(operand){
         this._verifyIsComplexNumber(operand);
-        return Complex.of(
+        return new Complex(
             this._real - operand.real(),
             this._imag - operand.imag()
         );
@@ -41,7 +41,7 @@ export default class Complex {
 
     multiply(operand){
         this._verifyIsComplexNumber(operand);
-        return Complex.of(
+        return new Complex(
             this._real * operand.real() - this._imag * operand.imag(),
             this._imag * operand.real() + this._real * operand.imag()
         );
