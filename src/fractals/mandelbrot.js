@@ -1,6 +1,8 @@
 import memoize from 'memoizee'
 
 import Complex from '../complex'
+import Broadcaster from '../broadcaster'
+
 
 
 export default new window.p5(function MandelbrotApp(p){
@@ -8,10 +10,8 @@ export default new window.p5(function MandelbrotApp(p){
     const WIDTH = 512;
     const HEIGHT = 512;
     const epsilon = 0.00001;
-
     const normalize = memoize(p.map, { primitive: true});
-    let State;
-    let render;
+    const stateEmitter = new Broadcaster();
 
     const DefaultState = {
         maxIters: 400,
@@ -23,22 +23,26 @@ export default new window.p5(function MandelbrotApp(p){
         reset: false
     };
 
+    let State;
+    let Render;
+
     p.update = function(state) {
         if (state.reset){
             State = Object.assign({}, DefaultState);
         } else {
-            State.maxIters       = state.iterations|0;
-            State.escapeRadius   = state.bound|0;
-            State.zoomX         = (state.zoomX|0) * .01;
-            State.zoomY         = (state.zoomY|0) * .01;
+            State.maxIters     = state.iterations|0;
+            State.escapeRadius = state.bound|0;
+            State.zoomX        = (state.zoomX|0) * .01;
+            State.zoomY        = (state.zoomY|0) * .01;
             State.hsb = {
                 h: state.hsb.hue|0,
                 s: state.hsb.saturation|0,
                 b: state.hsb.brightness|0
             }
         }
-        render();
+        Render();
     }
+
 
 
     p.setup = function(){
@@ -48,7 +52,14 @@ export default new window.p5(function MandelbrotApp(p){
         p.pixelDensity(1);
         p.colorMode(p.HSB);
         p.noLoop();
-        render = p.redraw.bind(this);
+        Render = p.redraw.bind(this);
+        stateEmitter.subscribe('status', status => {
+            if (status === 'rendering'){
+                console.log("rendering");
+            } else if (status === '!rendering') {
+                console.log("not rendering");
+            }
+        });
     }
 
     p.draw = () => {
@@ -59,6 +70,7 @@ export default new window.p5(function MandelbrotApp(p){
     const renderMandelbrotSet = state => {
         let itr;
         let colorValue;
+        stateEmitter.broadcast('status', 'rendering');
 
         for (let i = 0; i < WIDTH; i++) {
             for (let j = 0; j < HEIGHT; j++) {
@@ -98,6 +110,7 @@ export default new window.p5(function MandelbrotApp(p){
             }
         }
         p.updatePixels();
+        stateEmitter.broadcast('status', '!rendering');
     }
 
     const getNormedHSB = (hsb, val) => {

@@ -1,6 +1,6 @@
 import * as Cycle from '@cycle/rxjs-run'
 import Rx from 'rxjs'
-import {h3, p, div, input, label, makeDOMDriver} from '@cycle/dom'
+import {h3, h1, p, div, input, label, makeDOMDriver} from '@cycle/dom'
 
 import makeSketchDriver from './drivers/sketchDriver'
 import MandelbrotSet from './fractals/mandelbrot'
