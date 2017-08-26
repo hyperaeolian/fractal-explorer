@@ -25,6 +25,7 @@ export default new window.p5(function MandelbrotApp(p){
 
     let State;
     let Render;
+    const log2 = Math.log(2.0);
 
     p.update = function(state) {
         if (state.reset){
@@ -72,6 +73,8 @@ export default new window.p5(function MandelbrotApp(p){
         let colorValue;
         stateEmitter.broadcast('status', 'rendering');
 
+        let pixels = [];
+        let colorValues = [];
         for (let i = 0; i < WIDTH; i++) {
             for (let j = 0; j < HEIGHT; j++) {
 
@@ -98,19 +101,28 @@ export default new window.p5(function MandelbrotApp(p){
                     Z = Z.multiply(Z).add(C); itr++;
 
                     // continuous coloring via renormalized iteration count
-                    colorValue = itr - Math.log(Math.log(Z.modulus() * epsilon)) / Math.log(2.0);
+                    colorValue = itr - Math.log(Math.log(Z.modulus())) / log2;
                 }
-                
-                let hsb = getNormedHSB(state.hsb, colorValue);
-                let pixel = (i + (j << 9)) << 2;
-                p.pixels[  pixel] = hsb.HUE;
-                p.pixels[++pixel] = hsb.SATURATION;
-                p.pixels[++pixel] = hsb.BRIGHTNESS;
-                p.pixels[++pixel] = 250;
+
+                colorValues.push(colorValue);
+                pixels.push((i + (j << 9)) << 2);
             }
         }
+
+        colorFractal(state.hsb, colorValues, pixels);
         p.updatePixels();
         stateEmitter.broadcast('status', '!rendering');
+    }
+
+    function colorFractal(hsbObj, colorValues, pixels){
+        for (let i = 0, len = colorValues.length; i < len; ++i){
+            let hsb = getNormedHSB(hsbObj, colorValues[i]);
+            let pixel = pixels[i];
+            p.pixels[  pixel] = hsb.HUE;
+            p.pixels[++pixel] = hsb.SATURATION;
+            p.pixels[++pixel] = hsb.BRIGHTNESS;
+            p.pixels[++pixel] = 250;
+        }
     }
 
     const getNormedHSB = (hsb, val) => {
