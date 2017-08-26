@@ -3,16 +3,11 @@ export default class Complex {
         let isComplex = realOrComplex instanceof Complex;
         this._real = isComplex ? realOrComplex.real() : realOrComplex;
         this._imag = isComplex ? realOrComplex.imag() : imag;
+        this._pow2 = this.pow(2);
     }
 
-    _verifyIsComplexNumber(value){
-        if (!(value instanceof Complex)){
-            throw `${value} is not a complex number.`;
-        }
-
-        if (value.real() === null || value.imag() === null){
-            throw `Complex number ${value.toString()} does not have a valid real and/or imaginary component`;
-        }
+    isComplexNumber(value){
+        return value instanceof Complex;
     }
 
     static of(r, i){
@@ -24,27 +19,27 @@ export default class Complex {
     imag(){ return this._imag; }
 
     add(operand){
-        this._verifyIsComplexNumber(operand);
-        return new Complex(
-            this._real + operand.real(),
-            this._imag + operand.imag()
-        );
+        if (this.isComplexNumber(operand)){
+            return new Complex(
+                this._real + operand.real(),
+                this._imag + operand.imag()
+            );
+        }
+        return null;
     }
 
     subtract(operand){
-        this._verifyIsComplexNumber(operand);
-        return new Complex(
-            this._real - operand.real(),
-            this._imag - operand.imag()
-        );
+        throw `Subtraction of Complex numbers is not implemented.`
     }
 
     multiply(operand){
-        this._verifyIsComplexNumber(operand);
-        return new Complex(
-            this._real * operand.real() - this._imag * operand.imag(),
-            this._imag * operand.real() + this._real * operand.imag()
-        );
+        if (this.isComplexNumber(operand)){
+            return new Complex(
+                this._real * operand.real() - this._imag * operand.imag(),
+                this._imag * operand.real() + this._real * operand.imag()
+            );
+        }
+        return null;
     }
 
     divide(){
@@ -58,7 +53,7 @@ export default class Complex {
 
     modulus(){
         // Returns the absolute value of this complex number
-        return Math.sqrt(this.pow(2));
+        return Math.sqrt(this._pow2);
     }
 
     toString(){
