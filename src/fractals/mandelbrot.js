@@ -5,13 +5,12 @@ import Broadcaster from '../broadcaster'
 
 
 
-export default new window.p5(function MandelbrotApp(p){
+export default new window.p5(function MandelbrotApp(p5){
     
     const WIDTH = 512;
     const HEIGHT = 512;
     const epsilon = 0.00001;
-    const normalize = memoize(p.map, { primitive: true});
-    const stateEmitter = new Broadcaster();
+    const normalize = memoize(p5.map, { primitive: true});
 
     const DefaultState = {
         maxIters: 400,
@@ -25,16 +24,25 @@ export default new window.p5(function MandelbrotApp(p){
 
     let State;
     let Render;
+    let FIELD;
     const log2 = Math.log(2.0);
 
-    p.update = function(state) {
+    p5.update = function(state) {
         if (state.reset){
             State = Object.assign({}, DefaultState);
         } else {
+
+            // Render a new complex plane only if we need to
+            //  (i.e., zoom values changed)
+            let zoomXRecv = (state.zoomX|0) * .01;
+            let zoomYRecv = (state.zoomY|0) * .01;
+            if (State.zoomX !== zoomXRecv || State.zoomY !== zoomYRecv){
+                 State.zoomX = zoomXRecv;
+                 State.zoomY = zoomYRecv;
+                 FIELD = createComplexPlane(State.zoomX, State.zoomY);
+            }
             State.maxIters     = state.iterations|0;
             State.escapeRadius = state.bound|0;
-            State.zoomX        = (state.zoomX|0) * .01;
-            State.zoomY        = (state.zoomY|0) * .01;
             State.hsb = {
                 h: state.hsb.hue|0,
                 s: state.hsb.saturation|0,
@@ -45,46 +53,48 @@ export default new window.p5(function MandelbrotApp(p){
     }
 
 
-
-    p.setup = function(){
+    p5.setup = function(){
         State = Object.assign({}, DefaultState);
-        p.createCanvas(WIDTH, HEIGHT).parent('renderedOutputArea');
-        p.loadPixels();
-        p.pixelDensity(1);
-        p.colorMode(p.HSB);
-        p.noLoop();
-        Render = p.redraw.bind(this);
-        stateEmitter.subscribe('status', status => {
-            if (status === 'rendering'){
-                console.log("rendering");
-            } else if (status === '!rendering') {
-                console.log("not rendering");
-            }
-        });
+        FIELD = createComplexPlane(State.zoomX, State.zoomY);
+        p5.createCanvas(WIDTH, HEIGHT).parent('renderedOutputArea');
+        p5.loadPixels();
+        p5.pixelDensity(1);
+        p5.colorMode(p5.HSB);
+        p5.noLoop();
+        Render = p5.redraw.bind(this);
     }
 
-    p.draw = () => {
+    p5.draw = () => {
         renderMandelbrotSet(State);
+    }
+
+    function createComplexPlane(zoomX, zoomY){
+        let field = [];
+        for (let i = 0; i < WIDTH; i++) {
+            field.push([]);
+            for(let j = 0; j < HEIGHT; j++){
+                let x = new Complex(
+                    normalize(i, 0, WIDTH, zoomX, zoomY),
+                    normalize(j, 0, HEIGHT, zoomX, zoomY)
+                )
+                field[i].push(x);
+            }
+        }
+        return field;
     }
 
 
     const renderMandelbrotSet = state => {
         let itr;
         let colorValue;
-        stateEmitter.broadcast('status', 'rendering');
-
-        let pixels = [];
         let colorValues = [];
-        for (let i = 0; i < WIDTH; i++) {
-            for (let j = 0; j < HEIGHT; j++) {
+        let pixels = [];
 
-                let Z = new Complex(
-                    normalize(i, 0, WIDTH, state.zoomX, state.zoomY),
-                    normalize(j, 0, HEIGHT, state.zoomX, state.zoomY)
-                );
-
-                let C = new Complex(Z);
-
+        FIELD = createComplexPlane(state.zoomX, state.zoomY);
+        for (let i = 0, len = FIELD.length; i < len; i++){
+            for (let j = 0, len = FIELD.length; j < len; j++){
+                let Z = FIELD[i][j];
+                let C = FIELD[i][j];
                 itr = 0;
 
                 while (Z.modulus() < state.escapeRadius && itr < state.maxIters){
@@ -97,8 +107,8 @@ export default new window.p5(function MandelbrotApp(p){
                     colorValue = 0.0;
                 } else {
                     // decrease the size of error term with a few more iterations
-                    Z = Z.multiply(Z).add(C); itr++;
-                    Z = Z.multiply(Z).add(C); itr++;
+                     Z = Z.multiply(Z).add(C); itr++;
+                     Z = Z.multiply(Z).add(C); itr++;
 
                     // continuous coloring via renormalized iteration count
                     colorValue = itr - Math.log(Math.log(Z.modulus())) / log2;
@@ -110,18 +120,17 @@ export default new window.p5(function MandelbrotApp(p){
         }
 
         colorFractal(state.hsb, colorValues, pixels);
-        p.updatePixels();
-        stateEmitter.broadcast('status', '!rendering');
+        p5.updatePixels();
     }
 
     function colorFractal(hsbObj, colorValues, pixels){
         for (let i = 0, len = colorValues.length; i < len; ++i){
             let hsb = getNormedHSB(hsbObj, colorValues[i]);
             let pixel = pixels[i];
-            p.pixels[  pixel] = hsb.HUE;
-            p.pixels[++pixel] = hsb.SATURATION;
-            p.pixels[++pixel] = hsb.BRIGHTNESS;
-            p.pixels[++pixel] = 250;
+            p5.pixels[  pixel] = hsb.HUE;
+            p5.pixels[++pixel] = hsb.SATURATION;
+            p5.pixels[++pixel] = hsb.BRIGHTNESS;
+            p5.pixels[++pixel] = 250;
         }
     }
 
@@ -131,9 +140,9 @@ export default new window.p5(function MandelbrotApp(p){
         let b = hsb.b + val;
 
         return {
-            HUE:        h <= 360 ? h : p.norm(h, 0, 360),
-            SATURATION: s <= 100 ? s : p.norm(s, 0, 100),
-            BRIGHTNESS: b <= 100 ? b : p.norm(b, 0, 100)
+            HUE:        h <= 360 ? h : p5.norm(h, 0, 360),
+            SATURATION: s <= 100 ? s : p5.norm(s, 0, 100),
+            BRIGHTNESS: b <= 100 ? b : p5.norm(b, 0, 100)
         }
     };
 });

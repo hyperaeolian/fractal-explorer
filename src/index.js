@@ -85,7 +85,7 @@ function main(sources){
         brightSlider,
         xZoomSlider,
         yZoomSlider,
-       // escButton
+        escButton
     ]);
 
     // Put component states in a form that's readable for the sketch
