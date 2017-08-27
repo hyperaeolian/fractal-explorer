@@ -1,7 +1,6 @@
 import memoize from 'memoizee'
 
 import Complex from '../complex'
-import Broadcaster from '../broadcaster'
 
 
 
@@ -28,6 +27,14 @@ export default new window.p5(function MandelbrotApp(p5){
     const log2 = Math.log(2.0);
 
     p5.update = function(state) {
+        /**
+        *   Externally available function that is called whenever
+        *       the callee would like the sketch to update itself.
+        *
+        *   @method update
+        *   @param {Object} state - updated state the fractal should
+        *                           use when re-rendering
+        */
         if (state.reset){
             State = Object.assign({}, DefaultState);
         } else {
@@ -54,6 +61,10 @@ export default new window.p5(function MandelbrotApp(p5){
 
 
     p5.setup = function(){
+        /**
+        *   Called once on initialization and initializes and creates
+        *   any variables or configurations
+        */
         State = Object.assign({}, DefaultState);
         FIELD = createComplexPlane(State.zoomX, State.zoomY);
         p5.createCanvas(WIDTH, HEIGHT).parent('renderedOutputArea');
@@ -69,6 +80,16 @@ export default new window.p5(function MandelbrotApp(p5){
     }
 
     function createComplexPlane(zoomX, zoomY){
+        /**
+        *   Generates a complex plane that can be used to render a fractal
+        *
+        *   @method createComplexPlane
+        *   @param {Number} zoomX - the resolution along the x-axis of the
+        *                           field to be rendered
+        *   @param {Number} zoomY - the resolution along the y-axis of the
+        *                           field to be rendered
+        *   @returns {Array} field - a 2D array of complex numbers
+        */
         let field = [];
         for (let i = 0; i < WIDTH; i++) {
             field.push([]);
@@ -90,11 +111,10 @@ export default new window.p5(function MandelbrotApp(p5){
         let colorValues = [];
         let pixels = [];
 
-        FIELD = createComplexPlane(state.zoomX, state.zoomY);
         for (let i = 0, len = FIELD.length; i < len; i++){
             for (let j = 0, len = FIELD.length; j < len; j++){
-                let Z = FIELD[i][j];
-                let C = FIELD[i][j];
+                let Z = new Complex(FIELD[i][j]);
+                let C = new Complex(Z);
                 itr = 0;
 
                 while (Z.modulus() < state.escapeRadius && itr < state.maxIters){
@@ -124,6 +144,18 @@ export default new window.p5(function MandelbrotApp(p5){
     }
 
     function colorFractal(hsbObj, colorValues, pixels){
+        /**
+        *   Adds color values to rendered fractal
+        *
+        *   @method colorFractal
+        *   @param {Obj}   hsbObj - hue, saturation, brightness values requested
+        *                           in the UI
+        *   @param {Array} colorValues - values for color generated from calculation
+        *   @param {Array} pixels - the fractal that needs to be colored
+        */
+        if (colorValues.length !== pixels.length){
+            throw `Cannot color fractal`;
+        }
         for (let i = 0, len = colorValues.length; i < len; ++i){
             let hsb = getNormedHSB(hsbObj, colorValues[i]);
             let pixel = pixels[i];
@@ -135,6 +167,15 @@ export default new window.p5(function MandelbrotApp(p5){
     }
 
     const getNormedHSB = (hsb, val) => {
+        /**
+        *   Generates normalized color values using color values requested in the UI
+        *       and color values calculated in the fractal generation step
+        *
+        *   @method getNormedHSB
+        *   @param {Obj}    hsb - hue, saturation, brightness values requested in the UI
+        *   @param {Number} val - value for color generated from calculation
+        *   @returns {Object} - normalized hsb values using hsb and val
+        */
         let h = hsb.h + val;
         let s = hsb.s + val;
         let b = hsb.b + val;
