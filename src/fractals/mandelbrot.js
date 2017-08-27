@@ -26,6 +26,27 @@ export default new window.p5(function MandelbrotApp(p5){
     let FIELD;
     const log2 = Math.log(2.0);
 
+
+    p5.setup = function(){
+        /**
+        *   Called once on initialization and initializes and creates
+        *   any variables or configurations
+        */
+        State = Object.assign({}, DefaultState);
+        FIELD = createComplexPlane(State.zoomX, State.zoomY);
+        p5.createCanvas(WIDTH, HEIGHT).parent('renderedOutputArea');
+        p5.loadPixels();
+        p5.pixelDensity(1);
+        //FIXME: colorMode still seems to be RGB
+        p5.colorMode(p5.HSB);
+        p5.noLoop();
+        Render = p5.redraw.bind(this);
+    }
+
+    p5.draw = () => {
+        renderMandelbrotSet(State);
+    }
+
     p5.update = function(state) {
         /**
         *   Externally available function that is called whenever
@@ -57,26 +78,7 @@ export default new window.p5(function MandelbrotApp(p5){
             }
         }
         Render();
-    }
-
-
-    p5.setup = function(){
-        /**
-        *   Called once on initialization and initializes and creates
-        *   any variables or configurations
-        */
-        State = Object.assign({}, DefaultState);
-        FIELD = createComplexPlane(State.zoomX, State.zoomY);
-        p5.createCanvas(WIDTH, HEIGHT).parent('renderedOutputArea');
-        p5.loadPixels();
-        p5.pixelDensity(1);
-        p5.colorMode(p5.HSB);
-        p5.noLoop();
-        Render = p5.redraw.bind(this);
-    }
-
-    p5.draw = () => {
-        renderMandelbrotSet(State);
+        return true;
     }
 
     function createComplexPlane(zoomX, zoomY){
