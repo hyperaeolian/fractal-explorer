@@ -11,11 +11,12 @@ function main(sources){
 
     const Factory = ComponentFactory(sources);
     const createSlider = Factory('Slider');
-    const createToggleButton = Factory('ToggleButton');
+    const createButton = Factory('Button');
+   const createToggleButton = Factory('ToggleButton');
 
     const itrSlider = createSlider({
         label: 'Iterations',
-        min: 10,
+        min: 5,
         max: 1000,
         step: 1,
         value: 400
@@ -23,7 +24,7 @@ function main(sources){
 
     const infSlider = createSlider({
         label: 'Escape Radius',
-        min: 10,
+        min: 5,
         max: 100,
         step: 1,
         value: 20
@@ -69,6 +70,10 @@ function main(sources){
         value: 250
     });
 
+    const downloadButton = createButton({ label: 'Download' });
+
+    const saveButton = createButton({ label: 'Save' });
+
     const escButton = createToggleButton({
         label: "Escape Coloring"
     });
@@ -85,7 +90,9 @@ function main(sources){
         brightSlider,
         xZoomSlider,
         yZoomSlider,
-        escButton
+        escButton,
+        downloadButton,
+        saveButton
     ]);
 
     // Put component states in a form that's readable for the sketch
@@ -107,7 +114,7 @@ function main(sources){
 
     const AppState$ = Rx.Observable.combineLatest(...registry.states)
         .map(states => makeStatesObject(states));
-
+ 
     return {
         DOM: AppView$,
         Sketch: AppState$

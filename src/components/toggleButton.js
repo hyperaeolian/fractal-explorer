@@ -1,4 +1,3 @@
-import xs from 'xstream'
 import {div, strong, input, label} from '@cycle/dom'
 
 const cssClass = '.toggle-button';
