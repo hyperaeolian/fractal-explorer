@@ -1,6 +1,6 @@
 import debounce from 'xstream/extra/debounce'
 
-const loadingScreenEl = document.getElementById('spinner');
+const loadingScreenEl = document.getElementById('busy-indicator-container');
 
 export default function makeSketchDriver(App){
 
