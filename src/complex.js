@@ -25,7 +25,6 @@ export default class Complex {
                 this._imag + operand.imag()
             );
         }
-        return null;
     }
 
     subtract(operand){

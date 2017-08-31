@@ -14,7 +14,7 @@ export default new window.p5(function MandelbrotApp(p5){
     let render;
     let FIELD;
 
-    const normalize = memoize(p5.map, { primitive: true});
+    const scale = memoize(p5.map, { primitive: true});
 
     const defaultState = {
         maxIters: 400,
@@ -23,6 +23,8 @@ export default new window.p5(function MandelbrotApp(p5){
         zoomX: -2.5,
         zoomY: 2.5,
         hsb: { h: 0, s: 0, b: 0 },
+        renderAsJulia: false,
+        juliaConstant: 0.285,
         reset: false
     };
 
@@ -65,13 +67,18 @@ export default new window.p5(function MandelbrotApp(p5){
             //  (i.e., zoom values changed)
             let zoomXRecv = (state.zoomX|0) * .01;
             let zoomYRecv = (state.zoomY|0) * .01;
-            if (appState.zoomX !== zoomXRecv || appState.zoomY !== zoomYRecv){
+            if (appState.zoomX !== zoomXRecv ||
+                appState.zoomY !== zoomYRecv ||
+                appState.renderAsJulia !== state.renderAsJulia)
+            {
                  appState.zoomX = zoomXRecv;
                  appState.zoomY = zoomYRecv;
                  FIELD = createComplexPlane(appState.zoomX, appState.zoomY);
             }
             appState.maxIters     = state.iterations|0;
             appState.escapeRadius = state.bound|0;
+            appState.renderAsJulia = state.renderAsJulia;
+            appState.juliaConstant = state.juliaConstant;
             appState.hsb = {
                 h: state.hsb.hue|0,
                 s: state.hsb.saturation|0,
@@ -98,8 +105,8 @@ export default new window.p5(function MandelbrotApp(p5){
             field.push([]);
             for(let j = 0; j < HEIGHT; j++){
                 let x = new Complex(
-                    normalize(i, 0, WIDTH, zoomX, zoomY),
-                    normalize(j, 0, HEIGHT, zoomX, zoomY)
+                    scale(i, 0, WIDTH, zoomX, zoomY),
+                    scale(j, 0, HEIGHT, zoomX, zoomY)
                 )
                 field[i].push(x);
             }
@@ -113,11 +120,13 @@ export default new window.p5(function MandelbrotApp(p5){
         let colorValue;
         let colorValues = [];
         let pixels = [];
+        
+        let K = Complex.of(state.juliaConstant, state.juliaConstant);
 
         for (let x = 0, len = FIELD.length; x < len; x++){
             for (let y = 0, len = FIELD.length; y < len; y++){
                 let Z = FIELD[x][y];
-                let C = new Complex(Z);
+                let C = Complex.of(Z);
                 itr = 0;
 
                 while (Z.modulus() < state.escapeRadius && itr < state.maxIters){
@@ -182,6 +191,7 @@ export default new window.p5(function MandelbrotApp(p5){
         let h = hsb.h + val;
         let s = hsb.s + val;
         let b = hsb.b + val;
+
 
         return {
             HUE:        h <= 360 ? h : p5.norm(h, 0, 360),
