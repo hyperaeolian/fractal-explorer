@@ -12,7 +12,7 @@ function main(sources){
     const Factory = ComponentFactory(sources);
     const createSlider = Factory('Slider');
     const createButton = Factory('Button');
-   const createToggleButton = Factory('ToggleButton');
+    const createToggleButton = Factory('ToggleButton');
 
     const itrSlider = createSlider({
         label: 'Iterations',
@@ -70,12 +70,18 @@ function main(sources){
         value: 250
     });
 
-    const downloadButton = createButton({ label: 'Download' });
+    const juliaSlider = createSlider({
+        label: "Julia Constant",
+        min: 0,
+        max: 10,
+        step: 0.05,
+        value: 0.285
+    });
 
-    const saveButton = createButton({ label: 'Save' });
+    const escButton = createToggleButton({ label: "Escape Coloring" });
 
-    const escButton = createToggleButton({
-        label: "Escape Coloring"
+    const juliaButton = createToggleButton({
+        label: "Render as Julia Set"
     });
 
     // TODO: create reset button to clear params
@@ -90,9 +96,9 @@ function main(sources){
         brightSlider,
         xZoomSlider,
         yZoomSlider,
+        juliaSlider,
+        juliaButton,
         escButton,
-        downloadButton,
-        saveButton
     ]);
 
     // Put component states in a form that's readable for the sketch
@@ -106,7 +112,9 @@ function main(sources){
             },
             "zoomX": states[xZoomSlider.id],
             "zoomY": states[yZoomSlider.id],
-            "esc": states[escButton.id]
+            "juliaSlider": states[juliaSlider.id],
+            "renderJuliaSet": states[juliaButton.id],
+            "esc": states[escButton.id],
     });
 
     const AppView$ = Rx.Observable.combineLatest(...registry.views)

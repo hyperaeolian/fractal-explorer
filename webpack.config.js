@@ -5,14 +5,14 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const sourceFolder = path.resolve(__dirname, "./src");
 const outputFolder = path.resolve(__dirname, "./dist");
 const templateIndex = path.resolve(__dirname, "./src/index.html");
-
+const hotMod = new webpack.HotModuleReplacementPlugin();
 
 module.exports = {
   devtool: "eval",
   entry: [
     "webpack-dev-server/client?http://localhost:3000",
     "webpack/hot/only-dev-server",
-    sourceFolder
+    sourceFolder + "/main.js"
   ],
   output: {
     path: outputFolder,
@@ -20,7 +20,7 @@ module.exports = {
     publicPath: "http://localhost:3000/"
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
+    hotMod,
     new HtmlWebpackPlugin({
       inject : true,
       template : templateIndex
