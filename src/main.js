@@ -84,7 +84,7 @@ function main(sources){
 
     const juliaButton = createToggleButton({
         label: "Render as Julia Set",
-        value: false
+        value: true
     });
 
     // TODO: create reset button to clear params
@@ -115,7 +115,7 @@ function main(sources){
             },
             "zoomX": states[xZoomSlider.id],
             "zoomY": states[yZoomSlider.id],
-            "juliaSlider": states[juliaSlider.id],
+            "juliaConstant": states[juliaSlider.id],
             "renderAsJulia": states[juliaButton.id],
             "esc": states[escButton.id],
     });

@@ -1,11 +1,12 @@
 import {div, label, strong, input} from '@cycle/dom'
 
+const sliderCssClass = '.slider';
 
 export default function Slider(sources){
 
     // Get the updated value for the slider
     const update$ = sources.DOM
-        .select('.slider')
+        .select(sliderCssClass)
         .events('input')
         .map(e => e.target.value);
 
@@ -28,7 +29,7 @@ export default function Slider(sources){
             label('.slider-label', [
                 `${state.label}: `, strong(state.value)
             ]),
-            input('.slider', {
+            input(sliderCssClass, {
                 attrs: {
                     type: 'range',
                     min: state.min,

@@ -4,7 +4,7 @@ import Complex from '../complex'
 
 
 
-export default new window.p5(function MandelbrotApp(p5){
+export default new window.p5(function app(p5){
     
     const WIDTH = 512;
     const HEIGHT = 512;
@@ -121,12 +121,15 @@ export default new window.p5(function MandelbrotApp(p5){
         let colorValues = [];
         let pixels = [];
         
-        let K = Complex.of(state.juliaConstant, state.juliaConstant);
+        let K;
+        if (state.renderAsJulia){
+            K = Complex.of(state.juliaConstant, state.juliaConstant); 
+        }
 
         for (let x = 0, len = FIELD.length; x < len; x++){
             for (let y = 0, len = FIELD.length; y < len; y++){
                 let Z = FIELD[x][y];
-                let C = Complex.of(Z);
+                let C = K || Complex.of(Z);
                 itr = 0;
 
                 while (Z.modulus() < state.escapeRadius && itr < state.maxIters){

@@ -20,7 +20,6 @@ export default function toggleButton(input$){
         ).switch()
         .shareReplay(1);
 
-
     const view$ = state$
         .map(newState => 
             div([
@@ -35,8 +34,10 @@ export default function toggleButton(input$){
         );
 
 
-    return {
+    const output$ = {
         DOM: view$,
         value: state$.map(state => state.value)
     }
+
+    return output$;
 }
