@@ -78,10 +78,13 @@ function main(sources){
         value: 0.285
     });
 
-    const escButton = createToggleButton({ label: "Escape Coloring" });
+    const escButton = createToggleButton({
+        label: "Escape Coloring",
+        value: false });
 
     const juliaButton = createToggleButton({
-        label: "Render as Julia Set"
+        label: "Render as Julia Set",
+        value: false
     });
 
     // TODO: create reset button to clear params
@@ -113,7 +116,7 @@ function main(sources){
             "zoomX": states[xZoomSlider.id],
             "zoomY": states[yZoomSlider.id],
             "juliaSlider": states[juliaSlider.id],
-            "renderJuliaSet": states[juliaButton.id],
+            "renderAsJulia": states[juliaButton.id],
             "esc": states[escButton.id],
     });
 
@@ -122,7 +125,7 @@ function main(sources){
 
     const AppState$ = Rx.Observable.combineLatest(...registry.states)
         .map(states => makeStatesObject(states));
- 
+
     return {
         DOM: AppView$,
         Sketch: AppState$

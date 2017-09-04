@@ -2,29 +2,41 @@ import {div, strong, input, label} from '@cycle/dom'
 
 const cssClass = '.toggle-button';
 
-export default function toggleButton(sources){
-    const state$ = sources.DOM
+export default function toggleButton(input$){
+
+    const update$ = input$.DOM
         .select(cssClass)
         .events('change')
-        .map(ev => ev.target.checked)
-        .startWith(false)
+        .map(event => event.target.checked)
+        .startWith(false);
+    
+    const state$ = input$.props
+        .map(props => update$
+            .map(isChecked => ({
+                label: props.label,
+                value: isChecked
+            }))
+            // .startWith(props)
+        ).switch()
         .shareReplay(1);
 
+
     const view$ = state$
-        .map(checked =>
+        .map(newState => 
             div([
-                label(strong(sources.props.label)),
+                label(strong(newState.label)),
                 input(cssClass, { 
                     attrs: {
                         type: 'checkbox',
-                        checked
+                        value: newState.value
                     } 
                 })
             ])
         );
 
+
     return {
         DOM: view$,
-        value: state$.map(state => state)
+        value: state$.map(state => state.value)
     }
 }

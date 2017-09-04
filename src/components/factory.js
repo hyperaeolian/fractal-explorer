@@ -19,11 +19,13 @@ export function ComponentFactory(sources){
     return type => {
         return props => {
             let componentType;
-            let params = { DOM: sources.DOM, props };
+            let params = {
+                DOM: sources.DOM,
+                props: Rx.Observable.of(props)
+            };
 
             switch(type){
                 case 'Slider':
-                    params['props'] = Rx.Observable.of(props);
                     componentType = Slider;
                     break;
                 case 'Button':
