@@ -2,7 +2,7 @@ import Rx from 'rxjs'
 import isolate from '@cycle/isolate'
 import Slider from './slider'
 import Button from './button'
-import ToggleButton from './toggleButton' 
+import ToggleButton from './toggleButton'
 
 
 export function Register(components){
@@ -16,25 +16,18 @@ export function ComponentFactory(sources){
 
     let id = 0;
 
+    const components = {
+        Button, Slider, ToggleButton
+    }
+
     return type => {
         return props => {
-            let componentType;
             const params = {
                 DOM: sources.DOM,
                 props: Rx.Observable.of(props)
             };
 
-            switch(type){
-                case 'Slider':
-                    componentType = Slider;
-                    break;
-                case 'Button':
-                    componentType = Button;
-                    break;
-                case 'ToggleButton':
-                    componentType = ToggleButton;
-                    break;
-            }
+            const componentType = components[type];
 
             const component = isolate(componentType)(params);
 
