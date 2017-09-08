@@ -19,7 +19,7 @@ export function ComponentFactory(sources){
     return type => {
         return props => {
             let componentType;
-            let params = {
+            const params = {
                 DOM: sources.DOM,
                 props: Rx.Observable.of(props)
             };

@@ -10,6 +10,7 @@ export default new window.p5(function app(p5){
     const HEIGHT = 512;
     const epsilon = 0.00001;
     const log2 = Math.log(2.0);
+
     let appState;
     let render;
     let FIELD;
@@ -35,7 +36,7 @@ export default new window.p5(function app(p5){
         *   Called once on initialization and initializes and creates
         *   any variables or configurations
         */
-        appState = Object.assign({}, defaultState);
+        appState = getState(true);
         FIELD = createComplexPlane(appState.zoomX, appState.zoomY);
         p5.createCanvas(WIDTH, HEIGHT).parent('renderedOutputArea');
         p5.loadPixels();
@@ -47,10 +48,10 @@ export default new window.p5(function app(p5){
     }
 
     p5.draw = function(){
-        renderMandelbrotSet(appState);
+        renderMandelbrotSet();
     }
 
-    p5.update = function(state){
+    p5.update = function(newState){
         /**
         *   Externally available function that is called whenever
         *       the callee would like the sketch to update itself.
@@ -59,34 +60,51 @@ export default new window.p5(function app(p5){
         *   @param {Object} state - updated state the fractal should
         *                           use when re-rendering
         */
-        if (state.reset){
-            appState = Object.assign({}, defaultState);
-        } else {
+        setState(newState);
+        render();
+    }
 
+    function getState(getDefault){
+        // Hacky way of treating state as immutable -- p5js seems to
+        //  force the use of global variables by not providing the option
+        // to pass an arg to p5.draw
+        return Object.assign({}, getDefault ? defaultState : appState);
+    }
+
+    function getField(delta_x, delta_y, isJulia){
+        // Return a new field if certain attributes of the state
+        //  have changed, otherwise return the current field
+        if (appState.zoomX !== delta_x ||
+            appState.zoomY !== delta_y ||
+            appState.renderAsJulia !== isJulia)
+            {
+                appState.zoomX = delta_x;
+                appState.zoomY = delta_y;
+                return createComplexPlane(appState.zoomX, appState.zoomY);
+            } else {
+                return FIELD;
+            }
+    }
+
+    function setState(update){
+        if (update.reset){
+            appState = getState(true);
+        } else {
             // Render a new complex plane only if we need to
             //  (i.e., zoom values changed)
-            let zoomXRecv = (state.zoomX|0) * .01;
-            let zoomYRecv = (state.zoomY|0) * .01;
-            if (appState.zoomX !== zoomXRecv ||
-                appState.zoomY !== zoomYRecv ||
-                appState.renderAsJulia !== state.renderAsJulia)
-            {
-                 appState.zoomX = zoomXRecv;
-                 appState.zoomY = zoomYRecv;
-                 FIELD = createComplexPlane(appState.zoomX, appState.zoomY);
-            }
-            appState.maxIters     = state.iterations|0;
-            appState.escapeRadius = state.bound|0;
-            appState.renderAsJulia = state.renderAsJulia;
-            appState.juliaConstant = state.juliaConstant;
+            let zoomX = (update.zoomX|0) * .01;
+            let zoomY = (update.zoomY|0) * .01;
+            FIELD = getField(zoomX, zoomY, update.renderAsJulia);
+            appState.maxIters     = update.iterations|0;
+            appState.escapeRadius = update.bound|0;
+            appState.renderAsJulia = update.renderAsJulia;
+            appState.juliaConstant = update.juliaConstant;
             appState.hsb = {
-                h: state.hsb.hue|0,
-                s: state.hsb.saturation|0,
-                b: state.hsb.brightness|0
+                h: update.hsb.hue|0,
+                s: update.hsb.saturation|0,
+                b: update.hsb.brightness|0
             }
         }
-        render();
-        return true;
     }
 
     function createComplexPlane(zoomX, zoomY){
@@ -115,9 +133,10 @@ export default new window.p5(function app(p5){
     }
 
 
-    function renderMandelbrotSet(state){
+    function renderMandelbrotSet(){
         let itr;
         let colorValue;
+        let state = getState();
         let colorValues = [];
         let pixels = [];
         
@@ -127,7 +146,7 @@ export default new window.p5(function app(p5){
         }
 
         for (let x = 0, len = FIELD.length; x < len; x++){
-            for (let y = 0, len = FIELD.length; y < len; y++){
+            for (let y = 0; y < len; y++){
                 let Z = FIELD[x][y];
                 let C = K || Complex.of(Z);
                 itr = 0;
