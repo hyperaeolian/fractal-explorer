@@ -8,7 +8,6 @@ export default new window.p5(function app(p5){
     
     const WIDTH = 512;
     const HEIGHT = 512;
-    const epsilon = 0.00001;
     const log2 = Math.log(2.0);
 
     let appState;
@@ -87,7 +86,6 @@ export default new window.p5(function app(p5){
     }
 
     function setState(update){
-        console.log("Julia: ", update.isJulia);
         if (update.reset){
             appState = getState(true);
         } else {
@@ -161,10 +159,6 @@ export default new window.p5(function app(p5){
                 if (state.escapeColoring && itr === state.maxIters) {
                     colorValue = 0.0;
                 } else {
-                    // decrease the size of error term with a few more iterations
-                     Z = Z.multiply(Z).add(C); itr++;
-                     Z = Z.multiply(Z).add(C); itr++;
-
                     // continuous coloring via renormalized iteration count
                     colorValue = itr - Math.log(Math.log(Z.modulus())) / log2;
                 }

@@ -74,7 +74,7 @@ function main(sources){
         label: "Julia Constant",
         min: 0,
         max: 10,
-        step: 0.05,
+        step: 0.005,
         value: 0.285
     });
 
@@ -104,9 +104,7 @@ function main(sources){
     ]);
 
     // Put component states in a form that's readable for the sketch
-    const makeStatesObject = states => {
-        console.log(states, juliaButton.id);
-        return {
+    const makeStatesObject = states => ({
             "iterations": states[itrSlider.id],
             "bound": states[infSlider.id],
             "hsb": {
@@ -119,8 +117,7 @@ function main(sources){
             "juliaConstant": states[juliaSlider.id],
             "isJulia": states[juliaButton.id],
             "esc": states[escButton.id],
-        };
-    };
+    });
 
     const AppView$ = Rx.Observable.combineLatest(...registry.views)
         .map(views => div([ ...views ]));
