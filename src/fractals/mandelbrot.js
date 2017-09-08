@@ -24,7 +24,7 @@ export default new window.p5(function app(p5){
         zoomX: -2.5,
         zoomY: 2.5,
         hsb: { h: 0, s: 0, b: 0 },
-        renderAsJulia: false,
+        isJulia: false,
         juliaConstant: 0.285,
         reset: false
     };
@@ -76,7 +76,7 @@ export default new window.p5(function app(p5){
         //  have changed, otherwise return the current field
         if (appState.zoomX !== delta_x ||
             appState.zoomY !== delta_y ||
-            appState.renderAsJulia !== isJulia)
+            appState.isJulia !== isJulia)
             {
                 appState.zoomX = delta_x;
                 appState.zoomY = delta_y;
@@ -87,6 +87,7 @@ export default new window.p5(function app(p5){
     }
 
     function setState(update){
+        console.log("Julia: ", update.isJulia);
         if (update.reset){
             appState = getState(true);
         } else {
@@ -94,10 +95,10 @@ export default new window.p5(function app(p5){
             //  (i.e., zoom values changed)
             let zoomX = (update.zoomX|0) * .01;
             let zoomY = (update.zoomY|0) * .01;
-            FIELD = getField(zoomX, zoomY, update.renderAsJulia);
+            FIELD = getField(zoomX, zoomY, update.isJulia);
             appState.maxIters     = update.iterations|0;
             appState.escapeRadius = update.bound|0;
-            appState.renderAsJulia = update.renderAsJulia;
+            appState.isJulia = update.isJulia;
             appState.juliaConstant = update.juliaConstant;
             appState.hsb = {
                 h: update.hsb.hue|0,
@@ -141,7 +142,7 @@ export default new window.p5(function app(p5){
         let pixels = [];
         
         let K;
-        if (state.renderAsJulia){
+        if (state.isJulia){
             K = Complex.of(state.juliaConstant, state.juliaConstant); 
         }
 

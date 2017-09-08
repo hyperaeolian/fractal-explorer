@@ -78,16 +78,15 @@ function main(sources){
         value: 0.285
     });
 
-    const escButton = createToggleButton({
-        label: "Escape Coloring",
-        value: false });
-
     const juliaButton = createToggleButton({
         label: "Render as Julia Set",
         value: true
     });
 
-    // TODO: create reset button to clear params
+    const escButton = createToggleButton({
+        label: "Escape Coloring",
+        value: false });
+
 
     // Register our components so that we can perform bulk
     //  operations on them
@@ -105,7 +104,9 @@ function main(sources){
     ]);
 
     // Put component states in a form that's readable for the sketch
-    const makeStatesObject = states => ({
+    const makeStatesObject = states => {
+        console.log(states, juliaButton.id);
+        return {
             "iterations": states[itrSlider.id],
             "bound": states[infSlider.id],
             "hsb": {
@@ -116,9 +117,10 @@ function main(sources){
             "zoomX": states[xZoomSlider.id],
             "zoomY": states[yZoomSlider.id],
             "juliaConstant": states[juliaSlider.id],
-            "renderAsJulia": states[juliaButton.id],
+            "isJulia": states[juliaButton.id],
             "esc": states[escButton.id],
-    });
+        };
+    };
 
     const AppView$ = Rx.Observable.combineLatest(...registry.views)
         .map(views => div([ ...views ]));
